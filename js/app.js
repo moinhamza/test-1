@@ -53,25 +53,6 @@
     requestAnimationFrame(step);
   }
 
-  /* ---------- Hover effects: spotlight cards, 3D tilt, magnetic buttons ---------- */
-  const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
-  document.addEventListener('pointermove', e => {
-    const card = e.target.closest('.card, .stat-card, .skill'); if (!card) return;
-    const r = card.getBoundingClientRect(); card.style.setProperty('--mx', (e.clientX - r.left) + 'px'); card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-  });
-  if (fine) {
-    document.addEventListener('pointermove', e => {
-      const t = e.target.closest('.tilt'); if (!t) return;
-      const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      t.style.transform = `perspective(900px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) translateY(-4px)`;
-    });
-    document.addEventListener('pointerout', e => { const t = e.target.closest('.tilt'); if (t && !t.contains(e.relatedTarget)) t.style.transform = ''; });
-    $$('.btn-primary, .icon-btn').forEach(b => {
-      b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.translate = `${(e.clientX - r.left - r.width / 2) * .18}px ${(e.clientY - r.top - r.height / 2) * .28}px`; });
-      b.addEventListener('pointerleave', () => b.style.translate = '');
-    });
-  }
-
   /* ---------- Typewriter ---------- */
   const code = [
     ['tk-c', '// discord bot — ready handler'], ['', ''],
@@ -92,15 +73,15 @@
 
   /* ---------- Projects ---------- */
   const projects = [
-    { t: 'Nova Bot', cat: 'bot', icon: 'bot', c: ['#6d5dfc', '#22d3ee'], d: 'Multipurpose Discord bot with moderation, music, leveling and a slash-command framework serving thousands of members.', tags: ['discord.js', 'Node', 'MongoDB'], gh: '#', live: '#' },
-    { t: 'Bot Dashboard', cat: 'web', icon: 'barChart', c: ['#f472b6', '#6d5dfc'], d: 'Real-time analytics dashboard for bot stats with live charts, guild management and OAuth login.', tags: ['Express', 'Chart', 'OAuth2'], gh: '#', live: '#dashboard' },
-    { t: 'Ticket System', cat: 'bot', icon: 'ticket', c: ['#f59e0b', '#ef4444'], d: 'Support-ticket bot with transcripts, categories, staff claiming and auto-close on inactivity.', tags: ['discord.js', 'SQLite'], gh: '#' },
-    { t: 'Embed Builder', cat: 'tool', icon: 'puzzle', c: ['#10b981', '#22d3ee'], d: 'Visual Discord embed designer with live preview and JSON/webhook export.', tags: ['Vanilla JS', 'Webhooks'], gh: '#', live: '#' },
-    { t: 'Portfolio Site', cat: 'web', icon: 'globe', c: ['#8b5cf6', '#ec4899'], d: 'This site — responsive, themeable and dependency-free with a command palette and local workspace.', tags: ['HTML', 'CSS', 'JS'], gh: 'https://github.com/moinhamza/test-1' },
-    { t: 'Uptime Monitor', cat: 'tool', icon: 'radio', c: ['#0ea5e9', '#6366f1'], d: 'Pings services every minute and alerts a Discord channel with latency graphs when something goes down.', tags: ['Node', 'Cron', 'Webhooks'], gh: '#' }
+    { t: 'Nova Bot', cat: 'bot', icon: 'bot', c: ['#6366f1', '#0ea5e9'], d: 'Modular Discord bot with moderation, leveling and a slash-command framework, serving 40+ communities with 99.9% uptime.', tags: ['discord.js', 'Node', 'MongoDB'], gh: '#', live: '#' },
+    { t: 'Bot Dashboard', cat: 'web', icon: 'barChart', c: ['#0ea5e9', '#6366f1'], d: 'Real-time analytics dashboard with live charts, per-guild configuration and Discord OAuth2 sign-in.', tags: ['Express', 'Chart', 'OAuth2'], gh: '#', live: '#dashboard' },
+    { t: 'Ticket System', cat: 'bot', icon: 'ticket', c: ['#f59e0b', '#f97316'], d: 'Support-ticket workflow with transcripts, categories, staff assignment and automatic inactivity closure.', tags: ['discord.js', 'SQLite'], gh: '#' },
+    { t: 'Embed Builder', cat: 'tool', icon: 'puzzle', c: ['#10b981', '#14b8a6'], d: 'Visual embed designer with live preview, validation and JSON / webhook export.', tags: ['Vanilla JS', 'Webhooks'], gh: '#', live: '#' },
+    { t: 'Portfolio Site', cat: 'web', icon: 'globe', c: ['#8b5cf6', '#6366f1'], d: 'This site: responsive, themeable and dependency-free, with a command palette and local workspace.', tags: ['HTML', 'CSS', 'JS'], gh: 'https://github.com/moinhamza/test-1' },
+    { t: 'Uptime Monitor', cat: 'tool', icon: 'radio', c: ['#ef4444', '#f59e0b'], d: 'Monitors service health every minute and posts latency graphs and incident alerts to Discord.', tags: ['Node', 'Cron', 'Webhooks'], gh: '#' }
   ];
   $('#projectGrid').innerHTML = projects.map((p, i) => `
-    <article class="card project reveal tilt" data-cat="${p.cat}" style="--d:${i * 80}ms">
+    <article class="card project reveal" data-cat="${p.cat}" style="--d:${i * 80}ms">
       <div class="project-cover" style="--c1:${p.c[0]};--c2:${p.c[1]}"><span class="project-icon">${icon(p.icon)}</span></div>
       <div class="project-body">
         <h3>${esc(p.t)}</h3><p>${esc(p.d)}</p>
@@ -225,21 +206,20 @@
     const pad = { l: 44, r: 12, t: 16, b: 26 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
     let min = Math.min(...data.map(d => d.online)) * .9, max = Math.max(...data.map(d => d.online)) * 1.05; if (max - min < 1) { max = min + 10; }
     const X = i => pad.l + i / (data.length - 1) * cw, Y = v => pad.t + ch - (v - min) / (max - min) * ch;
-    const css = getComputedStyle(root), muted = css.getPropertyValue('--muted').trim(), accent = css.getPropertyValue('--accent').trim(), accent2 = css.getPropertyValue('--accent-2').trim();
+    const css = getComputedStyle(root), muted = css.getPropertyValue('--muted').trim(), accent = css.getPropertyValue('--accent').trim();
     ctx.font = '11px ' + css.getPropertyValue('--mono'); ctx.fillStyle = muted; ctx.strokeStyle = css.getPropertyValue('--border').trim(); ctx.lineWidth = 1;
     for (let g = 0; g <= 4; g++) { const y = pad.t + ch * g / 4; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmt(Math.round(max - (max - min) * g / 4)), pad.l - 8, y + 4); }
     ctx.textAlign = 'center'; const step = Math.ceil(data.length / 6);
     data.forEach((d, i) => { if (i % step === 0) ctx.fillText(new Date(d.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), X(i), h - 8); });
-    const hex6 = /^#[0-9a-f]{6}$/i.test(accent); const grad = ctx.createLinearGradient(0, pad.t, 0, h); grad.addColorStop(0, hex6 ? accent + '66' : accent); grad.addColorStop(1, hex6 ? accent + '00' : 'transparent');
+    const hex6 = /^#[0-9a-f]{6}$/i.test(accent); const grad = ctx.createLinearGradient(0, pad.t, 0, h); grad.addColorStop(0, hex6 ? accent + '40' : accent); grad.addColorStop(1, hex6 ? accent + '00' : 'transparent');
     ctx.beginPath(); data.forEach((d, i) => i ? ctx.lineTo(X(i), Y(d.online)) : ctx.moveTo(X(i), Y(d.online)));
     const line = new Path2D(); data.forEach((d, i) => i ? line.lineTo(X(i), Y(d.online)) : line.moveTo(X(i), Y(d.online)));
     ctx.lineTo(X(data.length - 1), pad.t + ch); ctx.lineTo(X(0), pad.t + ch); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-    const lg = ctx.createLinearGradient(pad.l, 0, w, 0); lg.addColorStop(0, accent); lg.addColorStop(1, accent2);
-    ctx.strokeStyle = lg; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke(line);
+    ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke(line);
     if (hoverX != null) {
       const i = Math.round((hoverX - pad.l) / cw * (data.length - 1)); if (i < 0 || i >= data.length) return;
       const x = X(i), y = Y(data[i].online); ctx.strokeStyle = muted; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ch); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = accent2; ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fill();
+      ctx.fillStyle = accent; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 7); ctx.fill(); ctx.strokeStyle = css.getPropertyValue('--surface').trim(); ctx.lineWidth = 2; ctx.stroke();
       const label = `${fmt(data[i].online)} online · ${new Date(data[i].t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; ctx.font = '600 12px ' + css.getPropertyValue('--font'); const tw = ctx.measureText(label).width + 16, tx = Math.min(Math.max(x - tw / 2, pad.l), w - pad.r - tw);
       ctx.fillStyle = css.getPropertyValue('--text').trim(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx, pad.t - 4, tw, 24, 6) : ctx.rect(tx, pad.t - 4, tw, 24); ctx.fill(); ctx.fillStyle = css.getPropertyValue('--bg').trim(); ctx.textAlign = 'center'; ctx.fillText(label, tx + tw / 2, pad.t + 12);
     }
@@ -269,6 +249,8 @@
     (s.events || []).slice().reverse().forEach(e => addEvent(e.text, e.t, isDemo ? e.text : undefined));
     setStatus(isDemo ? 'demo' : (s.status === 'online' ? '' : 'offline'), isDemo ? 'Demo data' : s.status === 'online' ? 'Bot online' : 'Bot offline');
     $('#lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    const fs = $('#footerStatus'); fs.className = 'footer-status status-pill ' + (isDemo ? 'demo' : s.status === 'online' ? '' : 'offline'); fs.innerHTML = `<span class="live-dot"></span> ${isDemo ? 'Demo mode' : s.status === 'online' ? 'All systems operational' : 'Bot offline'}`;
+    $('#footerUptime').textContent = `Uptime ${uptimeStr(s.uptime)} · ${s.ping} ms`;
   }
   async function loadStats() {
     if (CFG.BOT_API_URL) {
@@ -289,7 +271,7 @@
   $('#memberSearch').oninput = renderMembers; $('#memberStatusFilter').onchange = renderMembers;
   function applyWidget(w, isDemo) {
     $('#guildName').textContent = w.name; $('#presenceCount').textContent = w.presence_count;
-    const inv = $('#inviteBtn'); if (w.instant_invite) { inv.href = w.instant_invite; inv.hidden = false; } else inv.hidden = true;
+    const inv = $('#inviteBtn'), fi = $('#footerInvite'); if (w.instant_invite) { inv.href = fi.href = w.instant_invite; inv.hidden = false; fi.parentElement.hidden = false; } else { inv.hidden = true; fi.parentElement.hidden = true; }
     members = w.members || []; renderMembers();
     const chans = (w.channels || []).sort((a, b) => a.position - b.position);
     $('#channelList').innerHTML = chans.length ? chans.map(c => { const u = members.filter(m => m.channel_id === c.id); return `<li class="channel"><div class="channel-title"><span>${icon('volume')} ${esc(c.name)}</span><span class="muted">${u.length}</span></div>${u.length ? `<div class="channel-users">${u.map(avatarHTML).join('')}</div>` : ''}</li>`; }).join('') : '<li class="muted">No voice channels.</li>';

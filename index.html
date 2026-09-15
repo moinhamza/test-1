@@ -11,8 +11,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
-
+  
   <!-- ================= NAVBAR ================= -->
   <header class="navbar" id="navbar">
     <div class="container nav-inner">
@@ -29,6 +28,7 @@
       <div class="nav-actions">
         <button class="icon-btn" id="searchBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette"><span data-icon="search"></span></button>
         <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"><span class="theme-icon"></span></button>
+        <a href="#contact" class="btn btn-primary btn-sm nav-cta">Hire me</a>
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
       </div>
     </div>
@@ -39,17 +39,17 @@
     <section class="hero section" id="home">
       <div class="container hero-grid">
         <div class="hero-text reveal">
-          <p class="eyebrow"><span class="live-dot"></span> Available for work</p>
-          <h1>Hi, I'm <span class="gradient-text">Moin Hamza</span>.<br />I build bots, dashboards & web apps.</h1>
-          <p class="lead">Full-stack developer focused on Discord bots, real-time dashboards and delightful, responsive interfaces.</p>
+          <p class="eyebrow"><span class="live-dot"></span> Available for new projects</p>
+          <h1>Full-stack developer building Discord bots and real-time dashboards.</h1>
+          <p class="lead">I'm Moin Hamza. I design and ship reliable automation, bot infrastructure and data-driven web interfaces for communities and teams.</p>
           <div class="hero-cta">
-            <a href="#dashboard" class="btn btn-primary btn-shine"><span data-icon="barChart"></span>View Dashboard</a>
-            <a href="#projects" class="btn btn-ghost">See Projects<span data-icon="arrowRight" class="btn-arrow"></span></a>
+            <a href="#dashboard" class="btn btn-primary">View live dashboard</a>
+            <a href="#projects" class="btn btn-ghost">Browse projects<span data-icon="arrowRight" class="btn-arrow"></span></a>
           </div>
           <div class="hero-stats">
-            <div><strong data-count="3">0</strong><span>Years exp.</span></div>
-            <div><strong data-count="25">0</strong><span>Projects</span></div>
-            <div><strong id="heroServers" data-count="0">0</strong><span>Servers</span></div>
+            <div><strong data-count="3">0</strong><span>Years experience</span></div>
+            <div><strong data-count="25">0</strong><span>Projects shipped</span></div>
+            <div><strong id="heroServers" data-count="0">0</strong><span>Servers running</span></div>
           </div>
         </div>
         <div class="hero-card reveal">
@@ -66,8 +66,9 @@
       <div class="container">
         <div class="section-head reveal">
           <div>
-            <h2>Bot Dashboard</h2>
-            <p>Live statistics from the Discord bot. <span id="lastUpdated" class="muted">—</span></p>
+            <span class="kicker">Dashboard</span>
+            <h2>Bot performance at a glance</h2>
+            <p>Real-time metrics reported by the bot. <span id="lastUpdated" class="muted">—</span></p>
           </div>
           <div class="head-actions">
             <span class="status-pill" id="botStatus"><span class="live-dot"></span> Connecting…</span>
@@ -105,7 +106,7 @@
     <section class="section alt" id="discord">
       <div class="container">
         <div class="section-head reveal">
-          <div><h2>Discord Server</h2><p>Live from the Discord widget API — who's online and what's happening in voice.</p></div>
+          <div><span class="kicker">Community</span><h2>Discord server</h2><p>Live presence and voice activity, sourced from the Discord widget API.</p></div>
           <a class="btn btn-sm btn-discord" id="inviteBtn" href="#" target="_blank" rel="noopener"><span data-icon="discord"></span>Join server</a>
         </div>
         <div class="discord-grid">
@@ -132,7 +133,7 @@
     <section class="section" id="projects">
       <div class="container">
         <div class="section-head reveal">
-          <div><h2>Projects</h2><p>A selection of things I've built.</p></div>
+          <div><span class="kicker">Work</span><h2>Selected projects</h2><p>A selection of bots, tools and web applications I have designed and built.</p></div>
           <div class="chip-group" id="projectFilters"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="bot">Bots</button><button class="chip" data-filter="web">Web</button><button class="chip" data-filter="tool">Tools</button></div>
         </div>
         <div class="project-grid" id="projectGrid"></div>
@@ -142,15 +143,25 @@
     <!-- ================= SKILLS ================= -->
     <section class="section alt" id="skills">
       <div class="container">
-        <div class="section-head reveal"><div><h2>Skills</h2><p>Tools and technologies I work with daily.</p></div></div>
-        <div class="skills-grid" id="skillsGrid"></div>
+        <div class="section-head reveal"><div><span class="kicker">Expertise</span><h2>Skills & experience</h2><p>Technologies I work with daily, and where I have applied them.</p></div></div>
+        <div class="skills-layout">
+          <div class="skills-grid" id="skillsGrid"></div>
+          <div class="card reveal">
+            <div class="card-head"><h3>Experience</h3></div>
+            <ul class="timeline">
+              <li><time>2024 — Present</time><strong>Freelance Bot & Web Developer</strong><span>Building custom Discord bots, moderation tooling and analytics dashboards for communities of 1k–50k members.</span></li>
+              <li><time>2023 — 2024</time><strong>Full-stack Developer · Community Platforms</strong><span>Shipped a multi-tenant bot dashboard with OAuth2, role management and real-time metrics.</span></li>
+              <li><time>2022 — 2023</time><strong>Junior Developer</strong><span>Maintained Node.js services, wrote integration tests and automated deployments with GitHub Actions.</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ================= WORKSPACE (tasks + notes) ================= -->
     <section class="section" id="workspace">
       <div class="container">
-        <div class="section-head reveal"><div><h2>Workspace</h2><p>Tasks and notes, saved locally in your browser.</p></div></div>
+        <div class="section-head reveal"><div><span class="kicker">Tools</span><h2>Workspace</h2><p>A lightweight task list and notepad. Data is stored locally in your browser.</p></div></div>
         <div class="workspace-grid">
           <div class="card reveal">
             <div class="card-head"><h3>Tasks</h3><span class="muted" id="taskCount">0 left</span></div>
@@ -172,8 +183,9 @@
     <section class="section alt" id="contact">
       <div class="container contact-grid">
         <div class="reveal">
-          <h2>Let's work together</h2>
-          <p>Have a bot idea or a dashboard in mind? Drop a message and I'll get back within a day.</p>
+          <span class="kicker">Contact</span>
+          <h2>Let's build something together</h2>
+          <p>Have a bot, dashboard or integration in mind? Send a brief and I will respond within one business day.</p>
           <ul class="contact-list">
             <li><span class="contact-ic" data-icon="mail"></span><a href="mailto:hello@example.com">hello@example.com</a></li>
             <li><span class="contact-ic" data-icon="discord"></span><a href="#" id="discordTag">Discord: moin</a></li>
@@ -184,7 +196,7 @@
           <div class="field"><label for="cName">Name</label><input id="cName" required /></div>
           <div class="field"><label for="cEmail">Email</label><input id="cEmail" type="email" required /></div>
           <div class="field"><label for="cMsg">Message</label><textarea id="cMsg" rows="4" required></textarea></div>
-          <button class="btn btn-primary btn-shine" type="submit"><span data-icon="send"></span>Send message</button>
+          <button class="btn btn-primary" type="submit">Send message</button>
           <p class="form-msg" id="formMsg" role="status"></p>
         </form>
       </div>
@@ -192,9 +204,20 @@
   </main>
 
   <footer class="footer">
-    <div class="container footer-inner">
-      <span>© <span id="year"></span> Moin Hamza. Built with vanilla HTML, CSS & JS.</span>
-      <a href="#home" class="back-top"><span data-icon="arrowUp"></span>Back to top</a>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#home" class="brand"><span class="brand-dot"></span>moin<span class="accent">.dev</span></a>
+          <p>Discord bots, real-time dashboards and web applications — designed for reliability and built to scale.</p>
+        </div>
+        <div><h4>Site</h4><ul><li><a href="#dashboard">Dashboard</a></li><li><a href="#projects">Projects</a></li><li><a href="#skills">Skills</a></li><li><a href="#contact">Contact</a></li></ul></div>
+        <div><h4>Connect</h4><ul><li><a href="https://github.com/moinhamza" target="_blank" rel="noopener">GitHub</a></li><li><a href="#" id="footerInvite" target="_blank" rel="noopener">Discord server</a></li><li><a href="mailto:hello@example.com">Email</a></li></ul></div>
+        <div><h4>Status</h4><ul><li><span class="footer-status" id="footerStatus"><span class="live-dot"></span> Checking bot…</span></li><li><span id="footerUptime">—</span></li></ul></div>
+      </div>
+      <div class="footer-inner">
+        <span>© <span id="year"></span> Moin Hamza. All rights reserved.</span>
+        <a href="#home" class="back-top"><span data-icon="arrowUp"></span>Back to top</a>
+      </div>
     </div>
   </footer>
 
