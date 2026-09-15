@@ -27,7 +27,7 @@
  * realistic demo data so the page always looks alive.
  */
 window.SITE_CONFIG = {
-  DISCORD_SERVER_ID: "",          // e.g. "1234567890123456789"
+  DISCORD_SERVER_ID: "1454200146400251907",  // your Discord server (guild) ID
   BOT_API_URL: "/api/stats",       // e.g. "https://mybot.example.com/api/stats" ("" to disable)
   REFRESH_INTERVAL_MS: 30000,      // how often to refresh live data
   DISCORD_USERNAME: "moin",        // shown in the contact section

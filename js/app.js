@@ -275,13 +275,19 @@
     members = w.members || []; renderMembers();
     const chans = (w.channels || []).sort((a, b) => a.position - b.position);
     $('#channelList').innerHTML = chans.length ? chans.map(c => { const u = members.filter(m => m.channel_id === c.id); return `<li class="channel"><div class="channel-title"><span>${icon('volume')} ${esc(c.name)}</span><span class="muted">${u.length}</span></div>${u.length ? `<div class="channel-users">${u.map(avatarHTML).join('')}</div>` : ''}</li>`; }).join('') : '<li class="muted">No voice channels.</li>';
-    $('#setupNote').hidden = !isDemo;
+    const note = $('#setupNote'); note.hidden = !isDemo;
+    if (isDemo) note.innerHTML = `<strong>Showing demo data.</strong> ${widgetError} To enable live data: Discord → <em>Server Settings → Widget → Enable Server Widget</em>, and set <code>DISCORD_SERVER_ID</code> in <code>js/config.js</code>.`;
   }
   const demoWidget = () => ({ name: 'Nova Community (demo)', presence_count: 3120, instant_invite: '', channels: [{ id: '1', name: 'Lounge', position: 0 }, { id: '2', name: 'Gaming', position: 1 }, { id: '3', name: 'Music', position: 2 }], members: [['Moin', 'online', '1', 'Visual Studio Code'], ['nova_fan', 'idle', '1'], ['pixel', 'dnd', '2', 'Valorant'], ['sky', 'online', '2', 'Minecraft'], ['zed', 'online'], ['luna', 'idle'], ['kai', 'online', '3', 'Spotify'], ['aria', 'dnd']].map(([u, s, ch, g], i) => ({ id: String(i), username: u, status: s, channel_id: ch, game: g ? { name: g } : null })) });
+  let widgetError = '';
   async function loadWidget() {
     if (CFG.DISCORD_SERVER_ID) {
-      try { const r = await fetch(`https://discord.com/api/guilds/${CFG.DISCORD_SERVER_ID}/widget.json`, { cache: 'no-store' }); if (r.ok) { applyWidget(await r.json(), false); return; } } catch { }
-    }
+      try {
+        const r = await fetch(`https://discord.com/api/guilds/${CFG.DISCORD_SERVER_ID}/widget.json`, { cache: 'no-store' });
+        if (r.ok) { widgetError = ''; applyWidget(await r.json(), false); return; }
+        widgetError = r.status === 403 ? 'The server widget is disabled.' : r.status === 404 ? `No server found for ID ${CFG.DISCORD_SERVER_ID}. Make sure this is the <em>server</em> ID (right-click the server icon → Copy Server ID), not a channel ID.` : `Discord returned HTTP ${r.status}.`;
+      } catch { widgetError = 'Could not reach discord.com (network or ad-blocker).'; }
+    } else widgetError = 'No server ID configured.';
     applyWidget(demoWidget(), true);
   }
 
