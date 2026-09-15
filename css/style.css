@@ -163,6 +163,11 @@ canvas { width: 100% !important; display: block; }
 
 /* ---------- Discord ---------- */
 .discord-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
+.member-breakdown { display: flex; gap: 1rem; font-size: .78rem; color: var(--muted); margin-bottom: .75rem; font-variant-numeric: tabular-nums; }
+.member-breakdown span { display: inline-flex; align-items: center; gap: .4rem; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot.online { background: var(--ok); } .dot.idle { background: var(--idle); } .dot.dnd { background: var(--dnd); }
+.member-game { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
 .member-filters { display: flex; gap: .5rem; margin-bottom: .75rem; }
 .member-filters input { flex: 1; } .member-filters select { width: auto; }
 input, select, textarea { font-family: inherit; font-size: .875rem; padding: .6rem .8rem; border-radius: var(--r-sm); border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); width: 100%; outline: none; transition: border-color var(--t), box-shadow var(--t); }

@@ -266,11 +266,13 @@
   function renderMembers() {
     const q = $('#memberSearch').value.toLowerCase(), st = $('#memberStatusFilter').value;
     const list = members.filter(m => m.username.toLowerCase().includes(q) && (st === 'all' || m.status === st));
-    $('#memberList').innerHTML = list.length ? list.map(m => `<li class="member">${avatarHTML(m)}<div><div class="member-name">${esc(m.username)}</div>${m.game ? `<div class="member-game">${icon('gamepad')} ${esc(m.game.name)}</div>` : ''}</div></li>`).join('') : '<li class="muted">No members match.</li>';
+    $('#memberList').innerHTML = list.length ? list.map(m => `<li class="member">${avatarHTML(m)}<div><div class="member-name">${esc(m.username)}</div>${m.game ? `<div class="member-game" title="${esc(m.game.name)}">${icon('gamepad')} ${esc(String(m.game.name).split(/\r?\n/)[0].trim())}</div>` : ''}</div></li>`).join('') : '<li class="muted">No members match.</li>';
   }
   $('#memberSearch').oninput = renderMembers; $('#memberStatusFilter').onchange = renderMembers;
   function applyWidget(w, isDemo) {
     $('#guildName').textContent = w.name; $('#presenceCount').textContent = w.presence_count;
+    const cnt = st => (w.members || []).filter(m => m.status === st).length;
+    $('#memberBreakdown').innerHTML = [['online', 'Online'], ['idle', 'Idle'], ['dnd', 'DND']].map(([k, l]) => `<span><i class="dot ${k}"></i>${cnt(k)} ${l}</span>`).join('');
     const inv = $('#inviteBtn'), fi = $('#footerInvite'); if (w.instant_invite) { inv.href = fi.href = w.instant_invite; inv.hidden = false; fi.parentElement.hidden = false; } else { inv.hidden = true; fi.parentElement.hidden = true; }
     members = w.members || []; renderMembers();
     const chans = (w.channels || []).sort((a, b) => a.position - b.position);
