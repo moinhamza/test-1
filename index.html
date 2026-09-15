@@ -27,8 +27,8 @@
         <a href="#contact">Contact</a>
       </nav>
       <div class="nav-actions">
-        <button class="icon-btn" id="searchBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘</button>
-        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+        <button class="icon-btn" id="searchBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette"><span data-icon="search"></span></button>
+        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"><span class="theme-icon"></span></button>
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
       </div>
     </div>
@@ -43,8 +43,8 @@
           <h1>Hi, I'm <span class="gradient-text">Moin Hamza</span>.<br />I build bots, dashboards & web apps.</h1>
           <p class="lead">Full-stack developer focused on Discord bots, real-time dashboards and delightful, responsive interfaces.</p>
           <div class="hero-cta">
-            <a href="#dashboard" class="btn btn-primary">View Dashboard</a>
-            <a href="#projects" class="btn btn-ghost">See Projects</a>
+            <a href="#dashboard" class="btn btn-primary btn-shine"><span data-icon="barChart"></span>View Dashboard</a>
+            <a href="#projects" class="btn btn-ghost">See Projects<span data-icon="arrowRight" class="btn-arrow"></span></a>
           </div>
           <div class="hero-stats">
             <div><strong data-count="3">0</strong><span>Years exp.</span></div>
@@ -71,17 +71,17 @@
           </div>
           <div class="head-actions">
             <span class="status-pill" id="botStatus"><span class="live-dot"></span> Connecting…</span>
-            <button class="btn btn-sm btn-ghost" id="refreshBtn">↻ Refresh</button>
+            <button class="btn btn-sm btn-ghost" id="refreshBtn"><span data-icon="refresh"></span><span>Refresh</span></button>
           </div>
         </div>
 
         <div class="stats-grid reveal">
-          <article class="stat-card"><div class="stat-icon">🖥️</div><div><span class="stat-label">Servers</span><strong class="stat-value" id="statGuilds">—</strong></div><small id="statGuildsDelta" class="delta"></small></article>
-          <article class="stat-card"><div class="stat-icon">👥</div><div><span class="stat-label">Members</span><strong class="stat-value" id="statMembers">—</strong></div><small class="delta" id="statMembersDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon">🟢</div><div><span class="stat-label">Online now</span><strong class="stat-value" id="statOnline">—</strong></div><small class="delta" id="statOnlineDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon">⚡</div><div><span class="stat-label">Commands run</span><strong class="stat-value" id="statCommands">—</strong></div><small class="delta" id="statCommandsDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon">⏱️</div><div><span class="stat-label">Uptime</span><strong class="stat-value" id="statUptime">—</strong></div><small class="delta" id="statPing"></small></article>
-          <article class="stat-card"><div class="stat-icon">🧠</div><div><span class="stat-label">Memory</span><strong class="stat-value" id="statMemory">—</strong></div><small class="delta" id="statCpu"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="server"></div><div><span class="stat-label">Servers</span><strong class="stat-value" id="statGuilds">—</strong></div><small id="statGuildsDelta" class="delta"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="users"></div><div><span class="stat-label">Members</span><strong class="stat-value" id="statMembers">—</strong></div><small class="delta" id="statMembersDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="activity"></div><div><span class="stat-label">Online now</span><strong class="stat-value" id="statOnline">—</strong></div><small class="delta" id="statOnlineDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="zap"></div><div><span class="stat-label">Commands run</span><strong class="stat-value" id="statCommands">—</strong></div><small class="delta" id="statCommandsDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="clock"></div><div><span class="stat-label">Uptime</span><strong class="stat-value" id="statUptime">—</strong></div><small class="delta" id="statPing"></small></article>
+          <article class="stat-card"><div class="stat-icon" data-icon="cpu"></div><div><span class="stat-label">Memory</span><strong class="stat-value" id="statMemory">—</strong></div><small class="delta" id="statCpu"></small></article>
         </div>
 
         <div class="dash-grid">
@@ -106,7 +106,7 @@
       <div class="container">
         <div class="section-head reveal">
           <div><h2>Discord Server</h2><p>Live from the Discord widget API — who's online and what's happening in voice.</p></div>
-          <a class="btn btn-sm btn-discord" id="inviteBtn" href="#" target="_blank" rel="noopener">Join server</a>
+          <a class="btn btn-sm btn-discord" id="inviteBtn" href="#" target="_blank" rel="noopener"><span data-icon="discord"></span>Join server</a>
         </div>
         <div class="discord-grid">
           <div class="card reveal">
@@ -154,14 +154,14 @@
         <div class="workspace-grid">
           <div class="card reveal">
             <div class="card-head"><h3>Tasks</h3><span class="muted" id="taskCount">0 left</span></div>
-            <form id="taskForm" class="inline-form"><input id="taskInput" placeholder="Add a task… (Enter)" aria-label="New task" required /><button class="btn btn-primary btn-sm" type="submit">Add</button></form>
+            <form id="taskForm" class="inline-form"><input id="taskInput" placeholder="Add a task… (Enter)" aria-label="New task" required /><button class="btn btn-primary btn-sm" type="submit"><span data-icon="plus"></span>Add</button></form>
             <div class="chip-group small" id="taskFilters"><button class="chip active" data-tf="all">All</button><button class="chip" data-tf="active">Active</button><button class="chip" data-tf="done">Done</button></div>
             <ul class="task-list" id="taskList"></ul>
           </div>
           <div class="card reveal">
             <div class="card-head"><h3>Notes</h3><span class="muted" id="noteSaved">Saved</span></div>
             <textarea id="notes" rows="12" placeholder="Write anything… autosaves as you type. Supports **bold** and `code` in preview."></textarea>
-            <div class="note-actions"><button class="btn btn-xs btn-ghost" id="notePreviewBtn">Preview</button><button class="btn btn-xs btn-ghost" id="noteExportBtn">Export .md</button><span class="muted" id="noteWords">0 words</span></div>
+            <div class="note-actions"><button class="btn btn-xs btn-ghost" id="notePreviewBtn"><span data-icon="eye"></span><span>Preview</span></button><button class="btn btn-xs btn-ghost" id="noteExportBtn"><span data-icon="download"></span>Export .md</button><span class="muted" id="noteWords">0 words</span></div>
             <div class="note-preview" id="notePreview" hidden></div>
           </div>
         </div>
@@ -175,16 +175,16 @@
           <h2>Let's work together</h2>
           <p>Have a bot idea or a dashboard in mind? Drop a message and I'll get back within a day.</p>
           <ul class="contact-list">
-            <li>📧 <a href="mailto:hello@example.com">hello@example.com</a></li>
-            <li>💬 <a href="#" id="discordTag">Discord: moin</a></li>
-            <li>🐙 <a href="https://github.com/moinhamza" target="_blank" rel="noopener">github.com/moinhamza</a></li>
+            <li><span class="contact-ic" data-icon="mail"></span><a href="mailto:hello@example.com">hello@example.com</a></li>
+            <li><span class="contact-ic" data-icon="discord"></span><a href="#" id="discordTag">Discord: moin</a></li>
+            <li><span class="contact-ic" data-icon="github"></span><a href="https://github.com/moinhamza" target="_blank" rel="noopener">github.com/moinhamza</a></li>
           </ul>
         </div>
         <form class="card contact-form reveal" id="contactForm" novalidate>
           <div class="field"><label for="cName">Name</label><input id="cName" required /></div>
           <div class="field"><label for="cEmail">Email</label><input id="cEmail" type="email" required /></div>
           <div class="field"><label for="cMsg">Message</label><textarea id="cMsg" rows="4" required></textarea></div>
-          <button class="btn btn-primary" type="submit">Send message</button>
+          <button class="btn btn-primary btn-shine" type="submit"><span data-icon="send"></span>Send message</button>
           <p class="form-msg" id="formMsg" role="status"></p>
         </form>
       </div>
@@ -194,7 +194,7 @@
   <footer class="footer">
     <div class="container footer-inner">
       <span>© <span id="year"></span> Moin Hamza. Built with vanilla HTML, CSS & JS.</span>
-      <a href="#home" class="back-top">↑ Back to top</a>
+      <a href="#home" class="back-top"><span data-icon="arrowUp"></span>Back to top</a>
     </div>
   </footer>
 
@@ -206,8 +206,10 @@
     </div>
   </div>
 
+  <button class="fab-top" id="fabTop" aria-label="Back to top"><span data-icon="arrowUp"></span></button>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="js/icons.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>

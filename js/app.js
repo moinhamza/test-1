@@ -4,6 +4,7 @@
 (() => {
   'use strict';
   const CFG = window.SITE_CONFIG || {};
+  hydrateIcons();
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const store = {
@@ -20,7 +21,7 @@
 
   /* ---------- Theme ---------- */
   const root = document.documentElement, themeBtn = $('#themeToggle');
-  const applyTheme = t => { root.dataset.theme = t; themeBtn.textContent = t === 'dark' ? '🌙' : '☀️'; store.set('theme', t); };
+  const applyTheme = t => { root.dataset.theme = t; themeBtn.innerHTML = icon(t === 'dark' ? 'moon' : 'sun'); store.set('theme', t); };
   applyTheme(store.get('theme', matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
   themeBtn.onclick = () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
 
@@ -30,7 +31,9 @@
   burger.onclick = () => { const o = links.classList.toggle('open'); burger.classList.toggle('open', o); burger.setAttribute('aria-expanded', o); };
   $$('a', links).forEach(a => a.addEventListener('click', closeMenu));
   document.addEventListener('click', e => { if (!nav.contains(e.target)) closeMenu(); });
-  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10), { passive: true });
+  const fab = $('#fabTop'), progress = document.createElement('div'); progress.className = 'scroll-progress'; document.body.prepend(progress);
+  addEventListener('scroll', () => { nav.classList.toggle('scrolled', scrollY > 10); fab.classList.toggle('show', scrollY > 600); progress.style.width = (scrollY / (document.documentElement.scrollHeight - innerHeight) * 100) + '%'; }, { passive: true });
+  fab.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
   const sections = $$('main section[id]');
   const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$('a', links).forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-40% 0px -55% 0px' });
   sections.forEach(s => spy.observe(s));
@@ -42,6 +45,7 @@
     $$('[data-count]', e.target).forEach(animateCount);
     $$('.skill-bar i, .bar i', e.target).forEach(b => b.style.width = b.dataset.w);
   }), { threshold: .15 });
+  $$('.stat-card').forEach((el, i) => { el.classList.add('reveal'); el.style.setProperty('--d', i * 70 + 'ms'); });
   $$('.reveal').forEach(el => revealObs.observe(el));
   function animateCount(el) {
     const target = +el.dataset.count || 0, start = performance.now(), dur = 1400;
@@ -49,12 +53,31 @@
     requestAnimationFrame(step);
   }
 
+  /* ---------- Hover effects: spotlight cards, 3D tilt, magnetic buttons ---------- */
+  const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  document.addEventListener('pointermove', e => {
+    const card = e.target.closest('.card, .stat-card, .skill'); if (!card) return;
+    const r = card.getBoundingClientRect(); card.style.setProperty('--mx', (e.clientX - r.left) + 'px'); card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+  if (fine) {
+    document.addEventListener('pointermove', e => {
+      const t = e.target.closest('.tilt'); if (!t) return;
+      const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      t.style.transform = `perspective(900px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) translateY(-4px)`;
+    });
+    document.addEventListener('pointerout', e => { const t = e.target.closest('.tilt'); if (t && !t.contains(e.relatedTarget)) t.style.transform = ''; });
+    $$('.btn-primary, .icon-btn').forEach(b => {
+      b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.translate = `${(e.clientX - r.left - r.width / 2) * .18}px ${(e.clientY - r.top - r.height / 2) * .28}px`; });
+      b.addEventListener('pointerleave', () => b.style.translate = '');
+    });
+  }
+
   /* ---------- Typewriter ---------- */
   const code = [
     ['tk-c', '// discord bot — ready handler'], ['', ''],
     ['', '<k>const</k> client = <k>new</k> <f>Client</f>({ intents });'], ['', ''],
     ['', 'client.<f>once</f>(<s>"ready"</s>, () => {'],
-    ['', '  console.<f>log</f>(<s>`✅ Logged in as ${client.user.tag}`</s>);'],
+    ['', '  console.<f>log</f>(<s>`Logged in as ${client.user.tag}`</s>);'],
     ['', '  client.user.<f>setActivity</f>(<s>"/help"</s>);'],
     ['', '});'], ['', ''],
     ['', 'client.<f>login</f>(process.env.<f>TOKEN</f>);']
@@ -69,20 +92,20 @@
 
   /* ---------- Projects ---------- */
   const projects = [
-    { t: 'Nova Bot', cat: 'bot', icon: '🤖', c: ['#6d5dfc', '#22d3ee'], d: 'Multipurpose Discord bot with moderation, music, leveling and a slash-command framework serving thousands of members.', tags: ['discord.js', 'Node', 'MongoDB'], gh: '#', live: '#' },
-    { t: 'Bot Dashboard', cat: 'web', icon: '📊', c: ['#f472b6', '#6d5dfc'], d: 'Real-time analytics dashboard for bot stats with live charts, guild management and OAuth login.', tags: ['Express', 'Chart', 'OAuth2'], gh: '#', live: '#dashboard' },
-    { t: 'Ticket System', cat: 'bot', icon: '🎫', c: ['#f59e0b', '#ef4444'], d: 'Support-ticket bot with transcripts, categories, staff claiming and auto-close on inactivity.', tags: ['discord.js', 'SQLite'], gh: '#' },
-    { t: 'Embed Builder', cat: 'tool', icon: '🧩', c: ['#10b981', '#22d3ee'], d: 'Visual Discord embed designer with live preview and JSON/webhook export.', tags: ['Vanilla JS', 'Webhooks'], gh: '#', live: '#' },
-    { t: 'Portfolio Site', cat: 'web', icon: '🌐', c: ['#8b5cf6', '#ec4899'], d: 'This site — responsive, themeable and dependency-free with a command palette and local workspace.', tags: ['HTML', 'CSS', 'JS'], gh: 'https://github.com/moinhamza/test-1' },
-    { t: 'Uptime Monitor', cat: 'tool', icon: '📡', c: ['#0ea5e9', '#6366f1'], d: 'Pings services every minute and alerts a Discord channel with latency graphs when something goes down.', tags: ['Node', 'Cron', 'Webhooks'], gh: '#' }
+    { t: 'Nova Bot', cat: 'bot', icon: 'bot', c: ['#6d5dfc', '#22d3ee'], d: 'Multipurpose Discord bot with moderation, music, leveling and a slash-command framework serving thousands of members.', tags: ['discord.js', 'Node', 'MongoDB'], gh: '#', live: '#' },
+    { t: 'Bot Dashboard', cat: 'web', icon: 'barChart', c: ['#f472b6', '#6d5dfc'], d: 'Real-time analytics dashboard for bot stats with live charts, guild management and OAuth login.', tags: ['Express', 'Chart', 'OAuth2'], gh: '#', live: '#dashboard' },
+    { t: 'Ticket System', cat: 'bot', icon: 'ticket', c: ['#f59e0b', '#ef4444'], d: 'Support-ticket bot with transcripts, categories, staff claiming and auto-close on inactivity.', tags: ['discord.js', 'SQLite'], gh: '#' },
+    { t: 'Embed Builder', cat: 'tool', icon: 'puzzle', c: ['#10b981', '#22d3ee'], d: 'Visual Discord embed designer with live preview and JSON/webhook export.', tags: ['Vanilla JS', 'Webhooks'], gh: '#', live: '#' },
+    { t: 'Portfolio Site', cat: 'web', icon: 'globe', c: ['#8b5cf6', '#ec4899'], d: 'This site — responsive, themeable and dependency-free with a command palette and local workspace.', tags: ['HTML', 'CSS', 'JS'], gh: 'https://github.com/moinhamza/test-1' },
+    { t: 'Uptime Monitor', cat: 'tool', icon: 'radio', c: ['#0ea5e9', '#6366f1'], d: 'Pings services every minute and alerts a Discord channel with latency graphs when something goes down.', tags: ['Node', 'Cron', 'Webhooks'], gh: '#' }
   ];
-  $('#projectGrid').innerHTML = projects.map(p => `
-    <article class="card project reveal" data-cat="${p.cat}">
-      <div class="project-cover" style="--c1:${p.c[0]};--c2:${p.c[1]}">${p.icon}</div>
+  $('#projectGrid').innerHTML = projects.map((p, i) => `
+    <article class="card project reveal tilt" data-cat="${p.cat}" style="--d:${i * 80}ms">
+      <div class="project-cover" style="--c1:${p.c[0]};--c2:${p.c[1]}"><span class="project-icon">${icon(p.icon)}</span></div>
       <div class="project-body">
         <h3>${esc(p.t)}</h3><p>${esc(p.d)}</p>
         <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-        <div class="project-links">${p.gh ? `<a href="${p.gh}" target="_blank" rel="noopener">GitHub →</a>` : ''}${p.live ? `<a href="${p.live}" ${p.live.startsWith('#') ? '' : 'target="_blank" rel="noopener"'}>Live →</a>` : ''}</div>
+        <div class="project-links">${p.gh ? `<a href="${p.gh}" target="_blank" rel="noopener">${icon('github')}GitHub</a>` : ''}${p.live ? `<a href="${p.live}" ${p.live.startsWith('#') ? '' : 'target="_blank" rel="noopener"'}>${icon('externalLink')}Live</a>` : ''}</div>
       </div>
     </article>`).join('');
   $$('.project').forEach(el => revealObs.observe(el));
@@ -94,14 +117,14 @@
 
   /* ---------- Skills ---------- */
   const skills = [['JavaScript / TypeScript', 92], ['Node.js', 90], ['discord.js', 95], ['HTML & CSS', 88], ['React', 75], ['MongoDB / SQL', 78], ['Python', 70], ['Git & CI', 82], ['Linux / Docker', 68]];
-  $('#skillsGrid').innerHTML = skills.map(([n, v]) => `<div class="skill reveal"><div class="skill-top"><span>${n}</span><span>${v}%</span></div><div class="skill-bar"><i data-w="${v}%"></i></div></div>`).join('');
+  $('#skillsGrid').innerHTML = skills.map(([n, v], i) => `<div class="skill reveal" style="--d:${i * 60}ms"><div class="skill-top"><span>${n}</span><span>${v}%</span></div><div class="skill-bar"><i data-w="${v}%"></i></div></div>`).join('');
   $$('.skill').forEach(el => revealObs.observe(el));
 
   /* ---------- Tasks ---------- */
   let tasks = store.get('tasks', []), taskFilter = 'all';
   const renderTasks = () => {
     const list = tasks.filter(t => taskFilter === 'all' || (taskFilter === 'done') === t.done);
-    $('#taskList').innerHTML = list.length ? list.map(t => `<li class="task ${t.done ? 'done' : ''}" data-id="${t.id}"><input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Toggle"/><span>${esc(t.text)}</span><button aria-label="Delete">✕</button></li>`).join('') : '<li class="muted">Nothing here 🎉</li>';
+    $('#taskList').innerHTML = list.length ? list.map(t => `<li class="task ${t.done ? 'done' : ''}" data-id="${t.id}"><input type="checkbox" ${t.done ? 'checked' : ''} aria-label="Toggle"/><span>${esc(t.text)}</span><button aria-label="Delete">${icon('x')}</button></li>`).join('') : `<li class="muted empty">${icon('partyPopper')} Nothing here</li>`;
     $('#taskCount').textContent = `${tasks.filter(t => !t.done).length} left`;
     store.set('tasks', tasks);
   };
@@ -133,7 +156,7 @@
     if (CFG.FORMSPREE_ID) {
       try { await fetch(`https://formspree.io/f/${CFG.FORMSPREE_ID}`, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(f) }); } catch { }
     }
-    msg.textContent = 'Thanks! Your message has been sent.'; f.reset(); toast('Message sent ✉️');
+    msg.textContent = 'Thanks! Your message has been sent.'; f.reset(); toast('Message sent');
   };
   $('#discordTag').textContent = `Discord: ${CFG.DISCORD_USERNAME || 'moin'}`;
   $('#year').textContent = new Date().getFullYear();
@@ -172,7 +195,7 @@
   const prev = {};
   const setStat = (id, val, deltaId, raw) => {
     const el = $(id); el.textContent = val;
-    if (deltaId && raw != null) { const d = $(deltaId), p = prev[id]; if (p != null && p !== raw) { const diff = raw - p; d.textContent = (diff > 0 ? '▲ +' : '▼ ') + fmt(Math.abs(diff)); d.classList.toggle('down', diff < 0); } prev[id] = raw; }
+    if (deltaId && raw != null) { const d = $(deltaId), p = prev[id]; if (p != null && p !== raw) { const diff = raw - p; d.innerHTML = icon(diff > 0 ? 'trendUp' : 'trendDown') + (diff > 0 ? '+' : '-') + fmt(Math.abs(diff)); d.classList.toggle('down', diff < 0); } prev[id] = raw; }
   };
   const uptimeStr = s => { const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`; };
 
@@ -256,7 +279,7 @@
   function renderMembers() {
     const q = $('#memberSearch').value.toLowerCase(), st = $('#memberStatusFilter').value;
     const list = members.filter(m => m.username.toLowerCase().includes(q) && (st === 'all' || m.status === st));
-    $('#memberList').innerHTML = list.length ? list.map(m => `<li class="member">${avatarHTML(m)}<div><div class="member-name">${esc(m.username)}</div>${m.game ? `<div class="member-game">🎮 ${esc(m.game.name)}</div>` : ''}</div></li>`).join('') : '<li class="muted">No members match.</li>';
+    $('#memberList').innerHTML = list.length ? list.map(m => `<li class="member">${avatarHTML(m)}<div><div class="member-name">${esc(m.username)}</div>${m.game ? `<div class="member-game">${icon('gamepad')} ${esc(m.game.name)}</div>` : ''}</div></li>`).join('') : '<li class="muted">No members match.</li>';
   }
   $('#memberSearch').oninput = renderMembers; $('#memberStatusFilter').onchange = renderMembers;
   function applyWidget(w, isDemo) {
@@ -264,7 +287,7 @@
     if (w.instant_invite) $('#inviteBtn').href = w.instant_invite;
     members = w.members || []; renderMembers();
     const chans = (w.channels || []).sort((a, b) => a.position - b.position);
-    $('#channelList').innerHTML = chans.length ? chans.map(c => { const u = members.filter(m => m.channel_id === c.id); return `<li class="channel"><div class="channel-title"><span>🔊 ${esc(c.name)}</span><span class="muted">${u.length}</span></div>${u.length ? `<div class="channel-users">${u.map(avatarHTML).join('')}</div>` : ''}</li>`; }).join('') : '<li class="muted">No voice channels.</li>';
+    $('#channelList').innerHTML = chans.length ? chans.map(c => { const u = members.filter(m => m.channel_id === c.id); return `<li class="channel"><div class="channel-title"><span>${icon('volume')} ${esc(c.name)}</span><span class="muted">${u.length}</span></div>${u.length ? `<div class="channel-users">${u.map(avatarHTML).join('')}</div>` : ''}</li>`; }).join('') : '<li class="muted">No voice channels.</li>';
     $('#setupNote').hidden = !isDemo;
   }
   const demoWidget = () => ({ name: 'Nova Community (demo)', presence_count: 3120, instant_invite: 'https://discord.gg/', channels: [{ id: '1', name: 'Lounge', position: 0 }, { id: '2', name: 'Gaming', position: 1 }, { id: '3', name: 'Music', position: 2 }], members: [['Moin', 'online', '1', 'Visual Studio Code'], ['nova_fan', 'idle', '1'], ['pixel', 'dnd', '2', 'Valorant'], ['sky', 'online', '2', 'Minecraft'], ['zed', 'online'], ['luna', 'idle'], ['kai', 'online', '3', 'Spotify'], ['aria', 'dnd']].map(([u, s, ch, g], i) => ({ id: String(i), username: u, status: s, channel_id: ch, game: g ? { name: g } : null })) });
@@ -275,7 +298,7 @@
     applyWidget(demoWidget(), true);
   }
 
-  async function loadAll(manual) { const b = $('#refreshBtn'); b.disabled = true; b.textContent = '↻ Refreshing…'; await Promise.all([loadStats(), loadWidget()]); b.disabled = false; b.textContent = '↻ Refresh'; if (manual) toast('Dashboard refreshed'); }
+  async function loadAll(manual) { const b = $('#refreshBtn'); b.disabled = true; b.classList.add('spinning'); b.lastElementChild.textContent = 'Refreshing…'; await Promise.all([loadStats(), loadWidget()]); b.disabled = false; b.classList.remove('spinning'); b.lastElementChild.textContent = 'Refresh'; if (manual) toast('Dashboard refreshed'); }
   $('#refreshBtn').onclick = () => loadAll(true);
   loadAll(); setInterval(() => document.visibilityState === 'visible' && loadAll(), CFG.REFRESH_INTERVAL_MS || 30000);
 })();

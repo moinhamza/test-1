@@ -31,7 +31,7 @@ client.on('guildMemberAdd', m => pushEvent(`Member joined: ${m.user.username}`))
 
 const onlineCount = () => client.guilds.cache.reduce((n, g) => n + g.members.cache.filter(m => m.presence && m.presence.status !== 'offline').size, 0);
 client.once('ready', () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
+  console.log(`Logged in as ${client.user.tag}`);
   setInterval(() => { activity.push({ t: Date.now(), online: onlineCount() }); if (activity.length > 24) activity.shift(); }, 60 * 60 * 1000);
   activity.push({ t: Date.now(), online: onlineCount() });
 });
@@ -56,5 +56,5 @@ app.get('/api/stats', (_req, res) => {
   });
 });
 app.use(express.static(path.join(__dirname, '..')));
-app.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log('🌐 http://localhost:' + (process.env.PORT || 3000)));
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log('http://localhost:' + (process.env.PORT || 3000)));
 client.login(process.env.DISCORD_TOKEN);
