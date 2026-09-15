@@ -1,0 +1,10 @@
+{
+  "name": "moin-portfolio-dashboard",
+  "version": "2.0.0",
+  "description": "Responsive portfolio + live Discord bot dashboard (vanilla HTML/CSS/JS)",
+  "scripts": {
+    "start": "npx --yes serve -l 3000 .",
+    "bot": "node server/bot-example.js"
+  },
+  "license": "MIT"
+}

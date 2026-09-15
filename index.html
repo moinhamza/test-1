@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfolio & live Discord bot dashboard" />
+  <title>Moin Hamza — Portfolio & Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#home" class="brand"><span class="brand-dot"></span>moin<span class="accent">.dev</span></a>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="#home" class="active">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#discord">Discord</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#workspace">Workspace</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" id="searchBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘</button>
+        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero section" id="home">
+      <div class="container hero-grid">
+        <div class="hero-text reveal">
+          <p class="eyebrow"><span class="live-dot"></span> Available for work</p>
+          <h1>Hi, I'm <span class="gradient-text">Moin Hamza</span>.<br />I build bots, dashboards & web apps.</h1>
+          <p class="lead">Full-stack developer focused on Discord bots, real-time dashboards and delightful, responsive interfaces.</p>
+          <div class="hero-cta">
+            <a href="#dashboard" class="btn btn-primary">View Dashboard</a>
+            <a href="#projects" class="btn btn-ghost">See Projects</a>
+          </div>
+          <div class="hero-stats">
+            <div><strong data-count="3">0</strong><span>Years exp.</span></div>
+            <div><strong data-count="25">0</strong><span>Projects</span></div>
+            <div><strong id="heroServers" data-count="0">0</strong><span>Servers</span></div>
+          </div>
+        </div>
+        <div class="hero-card reveal">
+          <div class="terminal">
+            <div class="terminal-bar"><span></span><span></span><span></span><em>bot.js</em></div>
+            <pre id="typewriter"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="section" id="dashboard">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>Bot Dashboard</h2>
+            <p>Live statistics from the Discord bot. <span id="lastUpdated" class="muted">—</span></p>
+          </div>
+          <div class="head-actions">
+            <span class="status-pill" id="botStatus"><span class="live-dot"></span> Connecting…</span>
+            <button class="btn btn-sm btn-ghost" id="refreshBtn">↻ Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid reveal">
+          <article class="stat-card"><div class="stat-icon">🖥️</div><div><span class="stat-label">Servers</span><strong class="stat-value" id="statGuilds">—</strong></div><small id="statGuildsDelta" class="delta"></small></article>
+          <article class="stat-card"><div class="stat-icon">👥</div><div><span class="stat-label">Members</span><strong class="stat-value" id="statMembers">—</strong></div><small class="delta" id="statMembersDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon">🟢</div><div><span class="stat-label">Online now</span><strong class="stat-value" id="statOnline">—</strong></div><small class="delta" id="statOnlineDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon">⚡</div><div><span class="stat-label">Commands run</span><strong class="stat-value" id="statCommands">—</strong></div><small class="delta" id="statCommandsDelta"></small></article>
+          <article class="stat-card"><div class="stat-icon">⏱️</div><div><span class="stat-label">Uptime</span><strong class="stat-value" id="statUptime">—</strong></div><small class="delta" id="statPing"></small></article>
+          <article class="stat-card"><div class="stat-icon">🧠</div><div><span class="stat-label">Memory</span><strong class="stat-value" id="statMemory">—</strong></div><small class="delta" id="statCpu"></small></article>
+        </div>
+
+        <div class="dash-grid">
+          <div class="card reveal">
+            <div class="card-head"><h3>Online members (24h)</h3><div class="chip-group" id="rangeChips"><button class="chip active" data-range="24">24h</button><button class="chip" data-range="12">12h</button><button class="chip" data-range="6">6h</button></div></div>
+            <canvas id="activityChart" height="220" aria-label="Activity chart" role="img"></canvas>
+          </div>
+          <div class="card reveal">
+            <div class="card-head"><h3>Top commands</h3></div>
+            <ul class="bar-list" id="commandList"><li class="muted">Waiting for data…</li></ul>
+          </div>
+          <div class="card reveal">
+            <div class="card-head"><h3>Recent events</h3><button class="btn btn-xs btn-ghost" id="clearLog">Clear</button></div>
+            <ul class="log" id="eventLog"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DISCORD ================= -->
+    <section class="section alt" id="discord">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><h2>Discord Server</h2><p>Live from the Discord widget API — who's online and what's happening in voice.</p></div>
+          <a class="btn btn-sm btn-discord" id="inviteBtn" href="#" target="_blank" rel="noopener">Join server</a>
+        </div>
+        <div class="discord-grid">
+          <div class="card reveal">
+            <div class="card-head"><h3 id="guildName">Server</h3><span class="status-pill"><span class="live-dot"></span> <span id="presenceCount">0</span> online</span></div>
+            <div class="member-filters">
+              <input type="search" id="memberSearch" placeholder="Search members…" aria-label="Search members" />
+              <select id="memberStatusFilter" aria-label="Filter by status"><option value="all">All</option><option value="online">Online</option><option value="idle">Idle</option><option value="dnd">DND</option></select>
+            </div>
+            <ul class="member-list" id="memberList"><li class="muted">Loading members…</li></ul>
+          </div>
+          <div class="card reveal">
+            <div class="card-head"><h3>Voice channels</h3></div>
+            <ul class="channel-list" id="channelList"><li class="muted">Loading channels…</li></ul>
+            <div class="setup-note" id="setupNote" hidden>
+              <strong>Widget not enabled.</strong> In Discord: <em>Server Settings → Widget → Enable Server Widget</em>, then set your server ID in <code>js/config.js</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS ================= -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><h2>Projects</h2><p>A selection of things I've built.</p></div>
+          <div class="chip-group" id="projectFilters"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="bot">Bots</button><button class="chip" data-filter="web">Web</button><button class="chip" data-filter="tool">Tools</button></div>
+        </div>
+        <div class="project-grid" id="projectGrid"></div>
+      </div>
+    </section>
+
+    <!-- ================= SKILLS ================= -->
+    <section class="section alt" id="skills">
+      <div class="container">
+        <div class="section-head reveal"><div><h2>Skills</h2><p>Tools and technologies I work with daily.</p></div></div>
+        <div class="skills-grid" id="skillsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ================= WORKSPACE (tasks + notes) ================= -->
+    <section class="section" id="workspace">
+      <div class="container">
+        <div class="section-head reveal"><div><h2>Workspace</h2><p>Tasks and notes, saved locally in your browser.</p></div></div>
+        <div class="workspace-grid">
+          <div class="card reveal">
+            <div class="card-head"><h3>Tasks</h3><span class="muted" id="taskCount">0 left</span></div>
+            <form id="taskForm" class="inline-form"><input id="taskInput" placeholder="Add a task… (Enter)" aria-label="New task" required /><button class="btn btn-primary btn-sm" type="submit">Add</button></form>
+            <div class="chip-group small" id="taskFilters"><button class="chip active" data-tf="all">All</button><button class="chip" data-tf="active">Active</button><button class="chip" data-tf="done">Done</button></div>
+            <ul class="task-list" id="taskList"></ul>
+          </div>
+          <div class="card reveal">
+            <div class="card-head"><h3>Notes</h3><span class="muted" id="noteSaved">Saved</span></div>
+            <textarea id="notes" rows="12" placeholder="Write anything… autosaves as you type. Supports **bold** and `code` in preview."></textarea>
+            <div class="note-actions"><button class="btn btn-xs btn-ghost" id="notePreviewBtn">Preview</button><button class="btn btn-xs btn-ghost" id="noteExportBtn">Export .md</button><span class="muted" id="noteWords">0 words</span></div>
+            <div class="note-preview" id="notePreview" hidden></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section class="section alt" id="contact">
+      <div class="container contact-grid">
+        <div class="reveal">
+          <h2>Let's work together</h2>
+          <p>Have a bot idea or a dashboard in mind? Drop a message and I'll get back within a day.</p>
+          <ul class="contact-list">
+            <li>📧 <a href="mailto:hello@example.com">hello@example.com</a></li>
+            <li>💬 <a href="#" id="discordTag">Discord: moin</a></li>
+            <li>🐙 <a href="https://github.com/moinhamza" target="_blank" rel="noopener">github.com/moinhamza</a></li>
+          </ul>
+        </div>
+        <form class="card contact-form reveal" id="contactForm" novalidate>
+          <div class="field"><label for="cName">Name</label><input id="cName" required /></div>
+          <div class="field"><label for="cEmail">Email</label><input id="cEmail" type="email" required /></div>
+          <div class="field"><label for="cMsg">Message</label><textarea id="cMsg" rows="4" required></textarea></div>
+          <button class="btn btn-primary" type="submit">Send message</button>
+          <p class="form-msg" id="formMsg" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> Moin Hamza. Built with vanilla HTML, CSS & JS.</span>
+      <a href="#home" class="back-top">↑ Back to top</a>
+    </div>
+  </footer>
+
+  <!-- Command palette -->
+  <div class="palette" id="palette" hidden>
+    <div class="palette-box" role="dialog" aria-label="Command palette">
+      <input id="paletteInput" placeholder="Type a command or section…" autocomplete="off" />
+      <ul id="paletteList"></ul>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
