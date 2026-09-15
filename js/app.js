@@ -5,6 +5,7 @@
   'use strict';
   const CFG = window.SITE_CONFIG || {};
   hydrateIcons();
+  document.addEventListener('DOMContentLoaded', () => window.Games && Games.init(), { once: true }); if (document.readyState !== 'loading') Games.init();
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const store = {
@@ -17,7 +18,7 @@
   /* ---------- Toast ---------- */
   const toastEl = $('#toast');
   let toastT;
-  const toast = msg => { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); };
+  const toast = window.toast = msg => { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); };
 
   /* ---------- Theme ---------- */
   const root = document.documentElement, themeBtn = $('#themeToggle');
@@ -74,7 +75,7 @@
   /* ---------- Projects ---------- */
   const projects = [
     { t: 'Nova Bot', cat: 'bot', icon: 'bot', c: ['#6366f1', '#0ea5e9'], d: 'Modular Discord bot with moderation, leveling and a slash-command framework, serving 40+ communities with 99.9% uptime.', tags: ['discord.js', 'Node', 'MongoDB'], gh: '#', live: '#' },
-    { t: 'Bot Dashboard', cat: 'web', icon: 'barChart', c: ['#0ea5e9', '#6366f1'], d: 'Real-time analytics dashboard with live charts, per-guild configuration and Discord OAuth2 sign-in.', tags: ['Express', 'Chart', 'OAuth2'], gh: '#', live: '#dashboard' },
+    { t: 'Browser Arcade', cat: 'web', icon: 'gamepad', c: ['#0ea5e9', '#6366f1'], d: 'Tic-Tac-Toe with an unbeatable minimax AI, memory match, canvas Snake and a reaction tester — all dependency-free.', tags: ['Canvas', 'Minimax', 'localStorage'], gh: 'https://github.com/moinhamza/test-1', live: '#games' },
     { t: 'Ticket System', cat: 'bot', icon: 'ticket', c: ['#f59e0b', '#f97316'], d: 'Support-ticket workflow with transcripts, categories, staff assignment and automatic inactivity closure.', tags: ['discord.js', 'SQLite'], gh: '#' },
     { t: 'Embed Builder', cat: 'tool', icon: 'puzzle', c: ['#10b981', '#14b8a6'], d: 'Visual embed designer with live preview, validation and JSON / webhook export.', tags: ['Vanilla JS', 'Webhooks'], gh: '#', live: '#' },
     { t: 'Portfolio Site', cat: 'web', icon: 'globe', c: ['#8b5cf6', '#6366f1'], d: 'This site: responsive, themeable and dependency-free, with a command palette and local workspace.', tags: ['HTML', 'CSS', 'JS'], gh: 'https://github.com/moinhamza/test-1' },
@@ -148,7 +149,7 @@
   const commands = [
     ...sections.map(s => ({ label: `Go to ${s.id[0].toUpperCase() + s.id.slice(1)}`, kbd: '#' + s.id, run: () => location.hash = s.id })),
     { label: 'Toggle theme', kbd: 'T', run: () => themeBtn.click() },
-    { label: 'Refresh bot stats', kbd: 'R', run: () => loadAll(true) },
+    { label: 'Refresh Discord data', kbd: 'R', run: () => loadAll(true) },
     { label: 'Export notes', kbd: 'E', run: () => $('#noteExportBtn').click() },
     { label: 'Clear completed tasks', kbd: '', run: () => { tasks = tasks.filter(t => !t.done); renderTasks(); toast('Cleared'); } }
   ];
@@ -172,93 +173,8 @@
   });
 
   /* ===================================================================
-     LIVE DATA: bot stats API + Discord widget
+     LIVE DATA: Discord widget
      =================================================================== */
-  const statusEl = $('#botStatus');
-  const setStatus = (mode, text) => { statusEl.className = 'status-pill ' + mode; statusEl.innerHTML = `<span class="live-dot"></span> ${text}`; };
-  const prev = {};
-  const setStat = (id, val, deltaId, raw) => {
-    const el = $(id); el.textContent = val;
-    if (deltaId && raw != null) { const d = $(deltaId), p = prev[id]; if (p != null && p !== raw) { const diff = raw - p; d.innerHTML = icon(diff > 0 ? 'trendUp' : 'trendDown') + (diff > 0 ? '+' : '-') + fmt(Math.abs(diff)); d.classList.toggle('down', diff < 0); } prev[id] = raw; }
-  };
-  const uptimeStr = s => { const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`; };
-
-  /* Demo data generator (used when the bot API is not reachable) */
-  const demo = (() => {
-    let base = { guilds: 42, members: 18640, online: 3120, commands: 152340, uptime: 86400 * 3 + 5400, ping: 38, memory: 142.3, cpu: 2.4 };
-    const cmds = ['play', 'help', 'ban', 'rank', 'ticket', 'meme', 'poll', 'skip'];
-    return () => {
-      base.online = Math.max(500, base.online + Math.round((Math.random() - .48) * 60));
-      base.commands += Math.round(Math.random() * 12); base.uptime += CFG.REFRESH_INTERVAL_MS / 1000; base.ping = 30 + Math.round(Math.random() * 25);
-      base.memory = +(135 + Math.random() * 15).toFixed(1); base.cpu = +(1 + Math.random() * 4).toFixed(1);
-      const now = Date.now(), activity = Array.from({ length: 24 }, (_, i) => ({ t: now - (23 - i) * 3600e3, online: Math.round(2200 + Math.sin(i / 3.8) * 700 + Math.random() * 200) }));
-      return { ...base, status: 'demo', topCommands: cmds.map((n, i) => ({ name: n, count: Math.round(40000 / (i + 1) + Math.random() * 500) })), activity, events: [{ t: now - 12e4, text: 'Executed /play in Lounge' }, { t: now - 34e4, text: 'Member joined: nova_fan' }, { t: now - 61e4, text: 'Joined guild "Pixel Hub"' }, { t: now - 9e5, text: 'Ticket #482 closed' }] };
-    };
-  })();
-
-  /* Activity chart (canvas, hi-dpi, hover tooltip) */
-  const canvas = $('#activityChart'), ctx = canvas.getContext('2d');
-  let activity = [], range = 24, hoverX = null;
-  function drawChart() {
-    const dpr = devicePixelRatio || 1, w = canvas.clientWidth, h = 220;
-    canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-    const data = activity.slice(-range); if (data.length < 2) return;
-    const pad = { l: 44, r: 12, t: 16, b: 26 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
-    let min = Math.min(...data.map(d => d.online)) * .9, max = Math.max(...data.map(d => d.online)) * 1.05; if (max - min < 1) { max = min + 10; }
-    const X = i => pad.l + i / (data.length - 1) * cw, Y = v => pad.t + ch - (v - min) / (max - min) * ch;
-    const css = getComputedStyle(root), muted = css.getPropertyValue('--muted').trim(), accent = css.getPropertyValue('--accent').trim();
-    ctx.font = '11px ' + css.getPropertyValue('--mono'); ctx.fillStyle = muted; ctx.strokeStyle = css.getPropertyValue('--border').trim(); ctx.lineWidth = 1;
-    for (let g = 0; g <= 4; g++) { const y = pad.t + ch * g / 4; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmt(Math.round(max - (max - min) * g / 4)), pad.l - 8, y + 4); }
-    ctx.textAlign = 'center'; const step = Math.ceil(data.length / 6);
-    data.forEach((d, i) => { if (i % step === 0) ctx.fillText(new Date(d.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), X(i), h - 8); });
-    const hex6 = /^#[0-9a-f]{6}$/i.test(accent); const grad = ctx.createLinearGradient(0, pad.t, 0, h); grad.addColorStop(0, hex6 ? accent + '40' : accent); grad.addColorStop(1, hex6 ? accent + '00' : 'transparent');
-    ctx.beginPath(); data.forEach((d, i) => i ? ctx.lineTo(X(i), Y(d.online)) : ctx.moveTo(X(i), Y(d.online)));
-    const line = new Path2D(); data.forEach((d, i) => i ? line.lineTo(X(i), Y(d.online)) : line.moveTo(X(i), Y(d.online)));
-    ctx.lineTo(X(data.length - 1), pad.t + ch); ctx.lineTo(X(0), pad.t + ch); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-    ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke(line);
-    if (hoverX != null) {
-      const i = Math.round((hoverX - pad.l) / cw * (data.length - 1)); if (i < 0 || i >= data.length) return;
-      const x = X(i), y = Y(data[i].online); ctx.strokeStyle = muted; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ch); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = accent; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 7); ctx.fill(); ctx.strokeStyle = css.getPropertyValue('--surface').trim(); ctx.lineWidth = 2; ctx.stroke();
-      const label = `${fmt(data[i].online)} online · ${new Date(data[i].t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; ctx.font = '600 12px ' + css.getPropertyValue('--font'); const tw = ctx.measureText(label).width + 16, tx = Math.min(Math.max(x - tw / 2, pad.l), w - pad.r - tw);
-      ctx.fillStyle = css.getPropertyValue('--text').trim(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx, pad.t - 4, tw, 24, 6) : ctx.rect(tx, pad.t - 4, tw, 24); ctx.fill(); ctx.fillStyle = css.getPropertyValue('--bg').trim(); ctx.textAlign = 'center'; ctx.fillText(label, tx + tw / 2, pad.t + 12);
-    }
-  }
-  canvas.onmousemove = e => { hoverX = e.offsetX; drawChart(); }; canvas.onmouseleave = () => { hoverX = null; drawChart(); };
-  canvas.addEventListener('touchmove', e => { hoverX = e.touches[0].clientX - canvas.getBoundingClientRect().left; drawChart(); }, { passive: true });
-  addEventListener('resize', drawChart); new MutationObserver(drawChart).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
-  $('#rangeChips').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; range = +b.dataset.range; $$('.chip', e.currentTarget).forEach(c => c.classList.toggle('active', c === b)); drawChart(); };
-
-  /* Event log */
-  const logEl = $('#eventLog'); let seenEvents = new Set();
-  const addEvent = (text, t = Date.now(), key = text + t) => { if (seenEvents.has(key)) return; seenEvents.add(key); const li = document.createElement('li'); li.innerHTML = `<time>${new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time><span>${esc(text)}</span>`; logEl.prepend(li); while (logEl.children.length > 40) logEl.lastChild.remove(); };
-  $('#clearLog').onclick = () => { logEl.innerHTML = ''; seenEvents.clear(); };
-
-  /* Apply bot stats */
-  function applyStats(s, isDemo) {
-    ['guilds', 'members', 'online', 'commands', 'uptime', 'ping', 'memory', 'cpu'].forEach(k => s[k] = +s[k] || 0);
-    setStat('#statGuilds', fmt(s.guilds), '#statGuildsDelta', s.guilds); setStat('#statMembers', fmt(s.members), '#statMembersDelta', s.members);
-    setStat('#statOnline', fmt(s.online), '#statOnlineDelta', s.online); setStat('#statCommands', fmt(s.commands), '#statCommandsDelta', s.commands);
-    setStat('#statUptime', uptimeStr(s.uptime)); $('#statPing').textContent = `${s.ping} ms`;
-    setStat('#statMemory', `${s.memory} MB`); $('#statCpu').textContent = `CPU ${s.cpu}%`;
-    const hs = $('#heroServers'); hs.dataset.count = s.guilds; if (hs.dataset.animated) hs.textContent = fmt(s.guilds);
-    const top = Array.isArray(s.topCommands) ? s.topCommands : [];
-    const maxC = Math.max(1, ...top.map(c => +c.count || 0));
-    $('#commandList').innerHTML = top.length ? top.slice(0, 6).map(c => `<li><code>/${esc(c.name)}</code><span>${fmt(c.count)}</span><div class="bar"><i data-w="${c.count / maxC * 100}%" style="width:${c.count / maxC * 100}%"></i></div></li>`).join('') : '<li class="muted">No commands recorded yet.</li>';
-    activity = s.activity || []; drawChart();
-    (s.events || []).slice().reverse().forEach(e => addEvent(e.text, e.t, isDemo ? e.text : undefined));
-    setStatus(isDemo ? 'demo' : (s.status === 'online' ? '' : 'offline'), isDemo ? 'Demo data' : s.status === 'online' ? 'Bot online' : 'Bot offline');
-    $('#lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
-    const fs = $('#footerStatus'); fs.className = 'footer-status status-pill ' + (isDemo ? 'demo' : s.status === 'online' ? '' : 'offline'); fs.innerHTML = `<span class="live-dot"></span> ${isDemo ? 'Demo mode' : s.status === 'online' ? 'All systems operational' : 'Bot offline'}`;
-    $('#footerUptime').textContent = `Uptime ${uptimeStr(s.uptime)} · ${s.ping} ms`;
-  }
-  async function loadStats() {
-    if (CFG.BOT_API_URL) {
-      try { const r = await fetch(CFG.BOT_API_URL, { cache: 'no-store' }); if (r.ok) { applyStats(await r.json(), false); return; } } catch { }
-    }
-    applyStats(demo(), true);
-  }
-
   /* Discord widget */
   let members = [];
   const initials = n => (n || '?').split(/\s|_/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -271,6 +187,8 @@
   $('#memberSearch').oninput = renderMembers; $('#memberStatusFilter').onchange = renderMembers;
   function applyWidget(w, isDemo) {
     $('#guildName').textContent = w.name; $('#presenceCount').textContent = w.presence_count;
+    const ho = $('#heroOnline'); ho.dataset.count = w.presence_count; if (ho.dataset.animated) ho.textContent = fmt(w.presence_count);
+    const fs = $('#footerStatus'); fs.className = 'footer-status ' + (isDemo ? 'demo' : ''); $('#footerOnline').textContent = isDemo ? 'Demo data' : `${w.presence_count} members online`; $('#footerGuild').textContent = isDemo ? 'Widget not connected' : w.name;
     const cnt = st => (w.members || []).filter(m => m.status === st).length;
     $('#memberBreakdown').innerHTML = [['online', 'Online'], ['idle', 'Idle'], ['dnd', 'DND']].map(([k, l]) => `<span><i class="dot ${k}"></i>${cnt(k)} ${l}</span>`).join('');
     const inv = $('#inviteBtn'), fi = $('#footerInvite'); if (w.instant_invite) { inv.href = fi.href = w.instant_invite; inv.hidden = false; fi.parentElement.hidden = false; } else { inv.hidden = true; fi.parentElement.hidden = true; }
@@ -294,7 +212,6 @@
   }
 
   let loading = false;
-  async function loadAll(manual) { if (loading) return; loading = true; const b = $('#refreshBtn'); b.disabled = true; b.classList.add('spinning'); b.lastElementChild.textContent = 'Refreshing…'; await Promise.all([loadStats(), loadWidget()]); b.disabled = false; b.classList.remove('spinning'); b.lastElementChild.textContent = 'Refresh'; loading = false; if (manual) toast('Dashboard refreshed'); }
-  $('#refreshBtn').onclick = () => loadAll(true);
+  async function loadAll(manual) { if (loading) return; loading = true; await loadWidget(); loading = false; if (manual) toast('Refreshed'); }
   loadAll(); setInterval(() => document.visibilityState === 'visible' && loadAll(), CFG.REFRESH_INTERVAL_MS || 30000);
 })();

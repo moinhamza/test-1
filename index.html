@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Portfolio & live Discord bot dashboard" />
-  <title>Moin Hamza — Portfolio & Dashboard</title>
+  <meta name="description" content="Portfolio of Moin Hamza — web developer. Mini games, projects and live Discord community." />
+  <title>Moin Hamza — Developer Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
@@ -18,7 +18,7 @@
       <a href="#home" class="brand"><span class="brand-dot"></span>moin<span class="accent">.dev</span></a>
       <nav class="nav-links" id="navLinks" aria-label="Primary">
         <a href="#home" class="active">Home</a>
-        <a href="#dashboard">Dashboard</a>
+        <a href="#games">Games</a>
         <a href="#discord">Discord</a>
         <a href="#projects">Projects</a>
         <a href="#skills">Skills</a>
@@ -40,16 +40,16 @@
       <div class="container hero-grid">
         <div class="hero-text reveal">
           <p class="eyebrow"><span class="live-dot"></span> Available for new projects</p>
-          <h1>Full-stack developer building Discord bots and real-time dashboards.</h1>
-          <p class="lead">I'm Moin Hamza. I design and ship reliable automation, bot infrastructure and data-driven web interfaces for communities and teams.</p>
+          <h1>Full-stack developer building web apps, games and Discord integrations.</h1>
+          <p class="lead">I'm Moin Hamza. I design and ship polished, responsive web experiences — from interactive games to community tooling and Discord integrations.</p>
           <div class="hero-cta">
-            <a href="#dashboard" class="btn btn-primary">View live dashboard</a>
+            <a href="#games" class="btn btn-primary">Play the games</a>
             <a href="#projects" class="btn btn-ghost">Browse projects<span data-icon="arrowRight" class="btn-arrow"></span></a>
           </div>
           <div class="hero-stats">
             <div><strong data-count="3">0</strong><span>Years experience</span></div>
             <div><strong data-count="25">0</strong><span>Projects shipped</span></div>
-            <div><strong id="heroServers" data-count="0">0</strong><span>Servers running</span></div>
+            <div><strong id="heroOnline" data-count="0">0</strong><span>Members online</span></div>
           </div>
         </div>
         <div class="hero-card reveal">
@@ -61,43 +61,56 @@
       </div>
     </section>
 
-    <!-- ================= DASHBOARD ================= -->
-    <section class="section" id="dashboard">
+    <!-- ================= GAMES ================= -->
+    <section class="section" id="games">
       <div class="container">
         <div class="section-head reveal">
           <div>
-            <span class="kicker">Dashboard</span>
-            <h2>Bot performance at a glance</h2>
-            <p>Real-time metrics reported by the bot. <span id="lastUpdated" class="muted">—</span></p>
+            <span class="kicker">Arcade</span>
+            <h2>Mini games</h2>
+            <p>A few small games built from scratch in vanilla JavaScript. Best scores are saved in your browser.</p>
           </div>
-          <div class="head-actions">
-            <span class="status-pill" id="botStatus"><span class="live-dot"></span> Connecting…</span>
-            <button class="btn btn-sm btn-ghost" id="refreshBtn"><span data-icon="refresh"></span><span>Refresh</span></button>
+          <div class="chip-group" id="gameTabs" role="tablist">
+            <button class="chip active" data-game="ttt" role="tab">Tic-Tac-Toe</button>
+            <button class="chip" data-game="memory" role="tab">Memory</button>
+            <button class="chip" data-game="snake" role="tab">Snake</button>
+            <button class="chip" data-game="reaction" role="tab">Reaction</button>
           </div>
         </div>
 
-        <div class="stats-grid reveal">
-          <article class="stat-card"><div class="stat-icon" data-icon="server"></div><div><span class="stat-label">Servers</span><strong class="stat-value" id="statGuilds">—</strong></div><small id="statGuildsDelta" class="delta"></small></article>
-          <article class="stat-card"><div class="stat-icon" data-icon="users"></div><div><span class="stat-label">Members</span><strong class="stat-value" id="statMembers">—</strong></div><small class="delta" id="statMembersDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon" data-icon="activity"></div><div><span class="stat-label">Online now</span><strong class="stat-value" id="statOnline">—</strong></div><small class="delta" id="statOnlineDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon" data-icon="zap"></div><div><span class="stat-label">Commands run</span><strong class="stat-value" id="statCommands">—</strong></div><small class="delta" id="statCommandsDelta"></small></article>
-          <article class="stat-card"><div class="stat-icon" data-icon="clock"></div><div><span class="stat-label">Uptime</span><strong class="stat-value" id="statUptime">—</strong></div><small class="delta" id="statPing"></small></article>
-          <article class="stat-card"><div class="stat-icon" data-icon="cpu"></div><div><span class="stat-label">Memory</span><strong class="stat-value" id="statMemory">—</strong></div><small class="delta" id="statCpu"></small></article>
-        </div>
+        <div class="games-layout">
+          <div class="card game-stage reveal">
+            <!-- Tic-Tac-Toe -->
+            <div class="game" data-game="ttt">
+              <div class="game-head"><h3>Tic-Tac-Toe</h3><span class="muted" id="tttStatus">Your move — you are X</span></div>
+              <div class="ttt-board" id="tttBoard" aria-label="Tic-tac-toe board"></div>
+              <div class="game-actions"><button class="btn btn-ghost btn-sm" id="tttReset"><span data-icon="refresh"></span>New game</button><span class="muted" id="tttScore"></span></div>
+            </div>
+            <!-- Memory -->
+            <div class="game" data-game="memory" hidden>
+              <div class="game-head"><h3>Memory match</h3><span class="muted"><span id="memMoves">0</span> moves · <span id="memTime">0:00</span></span></div>
+              <div class="memory-board" id="memBoard"></div>
+              <div class="game-actions"><button class="btn btn-ghost btn-sm" id="memReset"><span data-icon="refresh"></span>Shuffle</button><span class="muted" id="memBest"></span></div>
+            </div>
+            <!-- Snake -->
+            <div class="game" data-game="snake" hidden>
+              <div class="game-head"><h3>Snake</h3><span class="muted">Score <strong id="snakeScore">0</strong> · Best <strong id="snakeBest">0</strong></span></div>
+              <div class="snake-wrap"><canvas id="snakeCanvas" width="360" height="360" aria-label="Snake game"></canvas><div class="snake-overlay" id="snakeOverlay"><strong>Snake</strong><span>Arrow keys / WASD or swipe. Press Start.</span><button class="btn btn-primary btn-sm" id="snakeStart">Start</button></div></div>
+              <div class="dpad" id="dpad" aria-label="Direction controls"><button data-dir="up" aria-label="Up"><span data-icon="arrowUp"></span></button><button data-dir="left" aria-label="Left"><span data-icon="arrowLeft"></span></button><button data-dir="down" aria-label="Down"><span data-icon="arrowDown"></span></button><button data-dir="right" aria-label="Right"><span data-icon="arrowRight"></span></button></div>
+            </div>
+            <!-- Reaction -->
+            <div class="game" data-game="reaction" hidden>
+              <div class="game-head"><h3>Reaction time</h3><span class="muted">Best <strong id="reactBest">—</strong></span></div>
+              <button class="reaction-pad" id="reactPad"><strong>Click to start</strong><span>Wait for green, then click as fast as you can.</span></button>
+              <div class="game-actions"><span class="muted" id="reactHistory"></span></div>
+            </div>
+          </div>
 
-        <div class="dash-grid">
-          <div class="card reveal">
-            <div class="card-head"><h3>Online members (24h)</h3><div class="chip-group" id="rangeChips"><button class="chip active" data-range="24">24h</button><button class="chip" data-range="12">12h</button><button class="chip" data-range="6">6h</button></div></div>
-            <canvas id="activityChart" height="220" aria-label="Activity chart" role="img"></canvas>
-          </div>
-          <div class="card reveal">
-            <div class="card-head"><h3>Top commands</h3></div>
-            <ul class="bar-list" id="commandList"><li class="muted">Waiting for data…</li></ul>
-          </div>
-          <div class="card reveal">
-            <div class="card-head"><h3>Recent events</h3><button class="btn btn-xs btn-ghost" id="clearLog">Clear</button></div>
-            <ul class="log" id="eventLog"></ul>
-          </div>
+          <aside class="card reveal">
+            <div class="card-head"><h3>Leaderboard</h3><button class="btn btn-xs btn-ghost" id="scoresReset">Reset</button></div>
+            <ul class="score-list" id="scoreList"></ul>
+            <p class="muted" style="margin:1rem 0 0">Scores are stored locally and never leave your device.</p>
+          </aside>
         </div>
       </div>
     </section>
@@ -150,8 +163,8 @@
           <div class="card reveal">
             <div class="card-head"><h3>Experience</h3></div>
             <ul class="timeline">
-              <li><time>2024 — Present</time><strong>Freelance Bot & Web Developer</strong><span>Building custom Discord bots, moderation tooling and analytics dashboards for communities of 1k–50k members.</span></li>
-              <li><time>2023 — 2024</time><strong>Full-stack Developer · Community Platforms</strong><span>Shipped a multi-tenant bot dashboard with OAuth2, role management and real-time metrics.</span></li>
+              <li><time>2024 — Present</time><strong>Freelance Web Developer</strong><span>Building responsive web apps, browser games and Discord integrations for communities and small businesses.</span></li>
+              <li><time>2023 — 2024</time><strong>Full-stack Developer · Community Platforms</strong><span>Shipped a multi-tenant community platform with OAuth2 sign-in, role management and real-time features.</span></li>
               <li><time>2022 — 2023</time><strong>Junior Developer</strong><span>Maintained Node.js services, wrote integration tests and automated deployments with GitHub Actions.</span></li>
             </ul>
           </div>
@@ -186,7 +199,7 @@
         <div class="reveal">
           <span class="kicker">Contact</span>
           <h2>Let's build something together</h2>
-          <p>Have a bot, dashboard or integration in mind? Send a brief and I will respond within one business day.</p>
+          <p>Have a website, game or integration in mind? Send a brief and I will respond within one business day.</p>
           <ul class="contact-list">
             <li><span class="contact-ic" data-icon="mail"></span><a href="mailto:hello@example.com">hello@example.com</a></li>
             <li><span class="contact-ic" data-icon="discord"></span><a href="#" id="discordTag">Discord: moin</a></li>
@@ -209,11 +222,11 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="#home" class="brand"><span class="brand-dot"></span>moin<span class="accent">.dev</span></a>
-          <p>Discord bots, real-time dashboards and web applications — designed for reliability and built to scale.</p>
+          <p>Web applications, browser games and Discord integrations — designed with care and built to last.</p>
         </div>
-        <div><h4>Site</h4><ul><li><a href="#dashboard">Dashboard</a></li><li><a href="#projects">Projects</a></li><li><a href="#skills">Skills</a></li><li><a href="#contact">Contact</a></li></ul></div>
+        <div><h4>Site</h4><ul><li><a href="#games">Games</a></li><li><a href="#projects">Projects</a></li><li><a href="#skills">Skills</a></li><li><a href="#contact">Contact</a></li></ul></div>
         <div><h4>Connect</h4><ul><li><a href="https://github.com/moinhamza" target="_blank" rel="noopener">GitHub</a></li><li><a href="#" id="footerInvite" target="_blank" rel="noopener">Discord server</a></li><li><a href="mailto:hello@example.com">Email</a></li></ul></div>
-        <div><h4>Status</h4><ul><li><span class="footer-status" id="footerStatus"><span class="live-dot"></span> Checking bot…</span></li><li><span id="footerUptime">—</span></li></ul></div>
+        <div><h4>Community</h4><ul><li><span class="footer-status" id="footerStatus"><span class="live-dot"></span> <span id="footerOnline">—</span></span></li><li><span id="footerGuild">—</span></li></ul></div>
       </div>
       <div class="footer-inner">
         <span>© <span id="year"></span> Moin Hamza. All rights reserved.</span>
@@ -235,6 +248,7 @@
 
   <script src="js/icons.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/games.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,40 +1,28 @@
-# Moin Hamza — Portfolio & Live Discord Dashboard
+# Moin Hamza — Developer Portfolio
 
-A fully responsive, dependency-free static website combining a personal portfolio with a **live Discord bot dashboard**.
+A responsive, dependency-free portfolio site with a browser arcade and a live Discord community panel. Vanilla HTML, CSS and JavaScript.
 
 ## Features
-- 🎨 **Dark / light theme** (remembers your choice, respects system preference)
-- 📱 **Fully responsive** — mobile hamburger nav, fluid grids, touch-friendly chart
-- 📊 **Bot dashboard** — servers, members, online, commands, uptime, ping, memory, CPU, with live deltas
-- 📈 **Activity chart** (hand-drawn canvas, hi-DPI, hover/touch tooltip, 6h/12h/24h ranges)
-- 💬 **Live Discord widget** — online members with status/activity, voice channels, invite link, search & filter
-- 🔔 **Event log** — recent bot events
-- 🗂️ **Projects** with category filters, **skills** with animated bars
-- ✅ **Workspace** — tasks (filters, persistence) and notes (autosave, markdown preview, export)
-- ⌘K **Command palette** for quick navigation & actions
-- ✉️ Contact form with validation (optional Formspree)
-- ♿ Skip link, ARIA labels, reduced-motion support
+- **Mini games** — Tic-Tac-Toe (unbeatable minimax AI), Memory match, canvas Snake (keyboard, swipe and on-screen d-pad) and a Reaction-time tester, with a local leaderboard
+- **Live Discord panel** — server name, online members with status and activity, voice channels and invite link via the Discord widget API
+- **Projects** with category filters, **skills** with animated bars, **experience** timeline
+- **Workspace** — tasks and notes with autosave, markdown preview and export
+- Dark / light theme, Ctrl+K command palette, scroll progress, back-to-top
+- Contact form with validation (optional Formspree)
+- Fully responsive; keyboard accessible; honours `prefers-reduced-motion`
 
 ## Run locally
 ```bash
-npm start          # serves the site at http://localhost:3000
+npm start   # http://localhost:3000
 ```
-or just open `index.html` in a browser.
+or open `index.html` directly.
 
-## Connect your Discord bot
+## Configuration — `js/config.js`
+| Key | Description |
+|---|---|
+| `DISCORD_SERVER_ID` | Your server (guild) ID. Enable **Server Settings → Widget → Enable Server Widget** in Discord. |
+| `REFRESH_INTERVAL_MS` | Refresh interval for Discord data (default 30 s). |
+| `DISCORD_USERNAME` | Shown in the contact section. |
+| `FORMSPREE_ID` | Optional Formspree form ID for the contact form. |
 
-### 1. Discord widget (no backend)
-Discord → **Server Settings → Widget → Enable Server Widget**, then in `js/config.js`:
-```js
-DISCORD_SERVER_ID: "1234567890123456789"
-```
-
-### 2. Bot stats API (optional)
-`server/bot-example.js` is a drop-in discord.js + Express server exposing `GET /api/stats` and serving the site:
-```bash
-npm i discord.js express cors
-DISCORD_TOKEN=your_token npm run bot
-```
-Point `BOT_API_URL` in `js/config.js` at it (default `/api/stats`). If you already have a bot, copy the `/api/stats` handler into it — the expected JSON shape is documented in `js/config.js`.
-
-When neither source is reachable, the dashboard shows clearly-labelled **demo data** so the page never looks broken.
+If the widget is unreachable the Discord panel shows labelled demo data with a note explaining why.

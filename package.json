@@ -1,10 +1,9 @@
 {
-  "name": "moin-portfolio-dashboard",
+  "name": "moin-portfolio",
   "version": "2.0.0",
-  "description": "Responsive portfolio + live Discord bot dashboard (vanilla HTML/CSS/JS)",
+  "description": "Responsive developer portfolio with browser games and a live Discord panel",
   "scripts": {
-    "start": "npx --yes serve -l 3000 .",
-    "bot": "node server/bot-example.js"
+    "start": "npx --yes serve -l 3000 ."
   },
   "license": "MIT"
 }
