@@ -11,7 +11,7 @@
     get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
     set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
   };
-  const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n);
+  const fmt = n => { n = +n || 0; const a = Math.abs(n), f = (v, u) => (v.toFixed(1).replace(/\.0$/, '')) + u; return a >= 1e6 ? f(n / 1e6, 'M') : a >= 1e3 ? f(n / 1e3, 'k') : String(Math.round(n)); };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   /* ---------- Toast ---------- */
@@ -49,7 +49,7 @@
   $$('.reveal').forEach(el => revealObs.observe(el));
   function animateCount(el) {
     const target = +el.dataset.count || 0, start = performance.now(), dur = 1400;
-    const step = t => { const p = Math.min(1, (t - start) / dur), v = Math.round(target * (1 - Math.pow(1 - p, 3))); el.textContent = fmt(v); if (p < 1) requestAnimationFrame(step); };
+    const step = t => { const p = Math.min(1, (t - start) / dur), v = Math.round(target * (1 - Math.pow(1 - p, 3))); el.textContent = fmt(v); if (p < 1) requestAnimationFrame(step); else el.dataset.animated = '1'; };
     requestAnimationFrame(step);
   }
 
@@ -128,7 +128,7 @@
     $('#taskCount').textContent = `${tasks.filter(t => !t.done).length} left`;
     store.set('tasks', tasks);
   };
-  $('#taskForm').onsubmit = e => { e.preventDefault(); const v = $('#taskInput').value.trim(); if (!v) return; tasks.unshift({ id: Date.now(), text: v, done: false }); $('#taskInput').value = ''; renderTasks(); toast('Task added'); };
+  $('#taskForm').onsubmit = e => { e.preventDefault(); const v = $('#taskInput').value.trim(); if (!v) return; tasks.unshift({ id: Date.now() + Math.random().toString(16).slice(2, 6), text: v, done: false }); $('#taskInput').value = ''; renderTasks(); toast('Task added'); };
   $('#taskList').onclick = e => {
     const li = e.target.closest('.task'); if (!li) return; const t = tasks.find(x => x.id == li.dataset.id);
     if (e.target.matches('button')) tasks = tasks.filter(x => x !== t); else if (e.target.matches('input')) t.done = !t.done;
@@ -154,7 +154,8 @@
     const msg = $('#formMsg'); if (!ok) { msg.style.color = 'var(--dnd)'; msg.textContent = 'Please fill in all fields correctly.'; return; }
     msg.style.color = 'var(--ok)';
     if (CFG.FORMSPREE_ID) {
-      try { await fetch(`https://formspree.io/f/${CFG.FORMSPREE_ID}`, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(f) }); } catch { }
+      try { const r = await fetch(`https://formspree.io/f/${CFG.FORMSPREE_ID}`, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(f) }); if (!r.ok) throw 0; }
+      catch { msg.style.color = 'var(--dnd)'; msg.textContent = 'Could not send right now — please email me directly.'; return; }
     }
     msg.textContent = 'Thanks! Your message has been sent.'; f.reset(); toast('Message sent');
   };
@@ -180,10 +181,12 @@
   pList.onclick = e => { const li = e.target.closest('li[data-i]'); if (li) { pFiltered[li.dataset.i].run(); closePalette(); } };
   addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.hidden ? openPalette() : closePalette(); }
+    if (e.key === 'Escape') closeMenu();
     if (palette.hidden) return;
     if (e.key === 'Escape') closePalette();
-    if (e.key === 'ArrowDown') { pIdx = (pIdx + 1) % pFiltered.length; renderPalette(); }
-    if (e.key === 'ArrowUp') { pIdx = (pIdx - 1 + pFiltered.length) % pFiltered.length; renderPalette(); }
+    if (!pFiltered.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); pIdx = (pIdx + 1) % pFiltered.length; renderPalette(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); pIdx = (pIdx - 1 + pFiltered.length) % pFiltered.length; renderPalette(); }
     if (e.key === 'Enter' && pFiltered[pIdx]) { pFiltered[pIdx].run(); closePalette(); }
   });
 
@@ -220,14 +223,14 @@
     canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
     const data = activity.slice(-range); if (data.length < 2) return;
     const pad = { l: 44, r: 12, t: 16, b: 26 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
-    const min = Math.min(...data.map(d => d.online)) * .9, max = Math.max(...data.map(d => d.online)) * 1.05;
+    let min = Math.min(...data.map(d => d.online)) * .9, max = Math.max(...data.map(d => d.online)) * 1.05; if (max - min < 1) { max = min + 10; }
     const X = i => pad.l + i / (data.length - 1) * cw, Y = v => pad.t + ch - (v - min) / (max - min) * ch;
     const css = getComputedStyle(root), muted = css.getPropertyValue('--muted').trim(), accent = css.getPropertyValue('--accent').trim(), accent2 = css.getPropertyValue('--accent-2').trim();
     ctx.font = '11px ' + css.getPropertyValue('--mono'); ctx.fillStyle = muted; ctx.strokeStyle = css.getPropertyValue('--border').trim(); ctx.lineWidth = 1;
     for (let g = 0; g <= 4; g++) { const y = pad.t + ch * g / 4; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmt(Math.round(max - (max - min) * g / 4)), pad.l - 8, y + 4); }
     ctx.textAlign = 'center'; const step = Math.ceil(data.length / 6);
     data.forEach((d, i) => { if (i % step === 0) ctx.fillText(new Date(d.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), X(i), h - 8); });
-    const grad = ctx.createLinearGradient(0, pad.t, 0, h); grad.addColorStop(0, accent + '66'); grad.addColorStop(1, accent + '00');
+    const hex6 = /^#[0-9a-f]{6}$/i.test(accent); const grad = ctx.createLinearGradient(0, pad.t, 0, h); grad.addColorStop(0, hex6 ? accent + '66' : accent); grad.addColorStop(1, hex6 ? accent + '00' : 'transparent');
     ctx.beginPath(); data.forEach((d, i) => i ? ctx.lineTo(X(i), Y(d.online)) : ctx.moveTo(X(i), Y(d.online)));
     const line = new Path2D(); data.forEach((d, i) => i ? line.lineTo(X(i), Y(d.online)) : line.moveTo(X(i), Y(d.online)));
     ctx.lineTo(X(data.length - 1), pad.t + ch); ctx.lineTo(X(0), pad.t + ch); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
@@ -238,7 +241,7 @@
       const x = X(i), y = Y(data[i].online); ctx.strokeStyle = muted; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ch); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = accent2; ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fill();
       const label = `${fmt(data[i].online)} online · ${new Date(data[i].t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; ctx.font = '600 12px ' + css.getPropertyValue('--font'); const tw = ctx.measureText(label).width + 16, tx = Math.min(Math.max(x - tw / 2, pad.l), w - pad.r - tw);
-      ctx.fillStyle = css.getPropertyValue('--text').trim(); ctx.beginPath(); ctx.roundRect(tx, pad.t - 4, tw, 24, 6); ctx.fill(); ctx.fillStyle = css.getPropertyValue('--bg').trim(); ctx.textAlign = 'center'; ctx.fillText(label, tx + tw / 2, pad.t + 12);
+      ctx.fillStyle = css.getPropertyValue('--text').trim(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx, pad.t - 4, tw, 24, 6) : ctx.rect(tx, pad.t - 4, tw, 24); ctx.fill(); ctx.fillStyle = css.getPropertyValue('--bg').trim(); ctx.textAlign = 'center'; ctx.fillText(label, tx + tw / 2, pad.t + 12);
     }
   }
   canvas.onmousemove = e => { hoverX = e.offsetX; drawChart(); }; canvas.onmouseleave = () => { hoverX = null; drawChart(); };
@@ -253,15 +256,17 @@
 
   /* Apply bot stats */
   function applyStats(s, isDemo) {
+    ['guilds', 'members', 'online', 'commands', 'uptime', 'ping', 'memory', 'cpu'].forEach(k => s[k] = +s[k] || 0);
     setStat('#statGuilds', fmt(s.guilds), '#statGuildsDelta', s.guilds); setStat('#statMembers', fmt(s.members), '#statMembersDelta', s.members);
     setStat('#statOnline', fmt(s.online), '#statOnlineDelta', s.online); setStat('#statCommands', fmt(s.commands), '#statCommandsDelta', s.commands);
     setStat('#statUptime', uptimeStr(s.uptime)); $('#statPing').textContent = `${s.ping} ms`;
     setStat('#statMemory', `${s.memory} MB`); $('#statCpu').textContent = `CPU ${s.cpu}%`;
-    const hs = $('#heroServers'); hs.dataset.count = s.guilds; if (hs.textContent !== '0') hs.textContent = fmt(s.guilds);
-    const maxC = Math.max(...s.topCommands.map(c => c.count));
-    $('#commandList').innerHTML = s.topCommands.slice(0, 6).map(c => `<li><code>/${esc(c.name)}</code><span>${fmt(c.count)}</span><div class="bar"><i data-w="${c.count / maxC * 100}%" style="width:${c.count / maxC * 100}%"></i></div></li>`).join('');
+    const hs = $('#heroServers'); hs.dataset.count = s.guilds; if (hs.dataset.animated) hs.textContent = fmt(s.guilds);
+    const top = Array.isArray(s.topCommands) ? s.topCommands : [];
+    const maxC = Math.max(1, ...top.map(c => +c.count || 0));
+    $('#commandList').innerHTML = top.length ? top.slice(0, 6).map(c => `<li><code>/${esc(c.name)}</code><span>${fmt(c.count)}</span><div class="bar"><i data-w="${c.count / maxC * 100}%" style="width:${c.count / maxC * 100}%"></i></div></li>`).join('') : '<li class="muted">No commands recorded yet.</li>';
     activity = s.activity || []; drawChart();
-    (s.events || []).slice().reverse().forEach(e => addEvent(e.text, e.t));
+    (s.events || []).slice().reverse().forEach(e => addEvent(e.text, e.t, isDemo ? e.text : undefined));
     setStatus(isDemo ? 'demo' : (s.status === 'online' ? '' : 'offline'), isDemo ? 'Demo data' : s.status === 'online' ? 'Bot online' : 'Bot offline');
     $('#lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
   }
@@ -274,7 +279,7 @@
 
   /* Discord widget */
   let members = [];
-  const initials = n => n.split(/\s|_/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const initials = n => (n || '?').split(/\s|_/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
   const avatarHTML = m => `<div class="avatar">${m.avatar_url ? `<img src="${m.avatar_url}" alt="" loading="lazy">` : esc(initials(m.username))}<i class="${m.status}"></i></div>`;
   function renderMembers() {
     const q = $('#memberSearch').value.toLowerCase(), st = $('#memberStatusFilter').value;
@@ -284,13 +289,13 @@
   $('#memberSearch').oninput = renderMembers; $('#memberStatusFilter').onchange = renderMembers;
   function applyWidget(w, isDemo) {
     $('#guildName').textContent = w.name; $('#presenceCount').textContent = w.presence_count;
-    if (w.instant_invite) $('#inviteBtn').href = w.instant_invite;
+    const inv = $('#inviteBtn'); if (w.instant_invite) { inv.href = w.instant_invite; inv.hidden = false; } else inv.hidden = true;
     members = w.members || []; renderMembers();
     const chans = (w.channels || []).sort((a, b) => a.position - b.position);
     $('#channelList').innerHTML = chans.length ? chans.map(c => { const u = members.filter(m => m.channel_id === c.id); return `<li class="channel"><div class="channel-title"><span>${icon('volume')} ${esc(c.name)}</span><span class="muted">${u.length}</span></div>${u.length ? `<div class="channel-users">${u.map(avatarHTML).join('')}</div>` : ''}</li>`; }).join('') : '<li class="muted">No voice channels.</li>';
     $('#setupNote').hidden = !isDemo;
   }
-  const demoWidget = () => ({ name: 'Nova Community (demo)', presence_count: 3120, instant_invite: 'https://discord.gg/', channels: [{ id: '1', name: 'Lounge', position: 0 }, { id: '2', name: 'Gaming', position: 1 }, { id: '3', name: 'Music', position: 2 }], members: [['Moin', 'online', '1', 'Visual Studio Code'], ['nova_fan', 'idle', '1'], ['pixel', 'dnd', '2', 'Valorant'], ['sky', 'online', '2', 'Minecraft'], ['zed', 'online'], ['luna', 'idle'], ['kai', 'online', '3', 'Spotify'], ['aria', 'dnd']].map(([u, s, ch, g], i) => ({ id: String(i), username: u, status: s, channel_id: ch, game: g ? { name: g } : null })) });
+  const demoWidget = () => ({ name: 'Nova Community (demo)', presence_count: 3120, instant_invite: '', channels: [{ id: '1', name: 'Lounge', position: 0 }, { id: '2', name: 'Gaming', position: 1 }, { id: '3', name: 'Music', position: 2 }], members: [['Moin', 'online', '1', 'Visual Studio Code'], ['nova_fan', 'idle', '1'], ['pixel', 'dnd', '2', 'Valorant'], ['sky', 'online', '2', 'Minecraft'], ['zed', 'online'], ['luna', 'idle'], ['kai', 'online', '3', 'Spotify'], ['aria', 'dnd']].map(([u, s, ch, g], i) => ({ id: String(i), username: u, status: s, channel_id: ch, game: g ? { name: g } : null })) });
   async function loadWidget() {
     if (CFG.DISCORD_SERVER_ID) {
       try { const r = await fetch(`https://discord.com/api/guilds/${CFG.DISCORD_SERVER_ID}/widget.json`, { cache: 'no-store' }); if (r.ok) { applyWidget(await r.json(), false); return; } } catch { }
@@ -298,7 +303,8 @@
     applyWidget(demoWidget(), true);
   }
 
-  async function loadAll(manual) { const b = $('#refreshBtn'); b.disabled = true; b.classList.add('spinning'); b.lastElementChild.textContent = 'Refreshing…'; await Promise.all([loadStats(), loadWidget()]); b.disabled = false; b.classList.remove('spinning'); b.lastElementChild.textContent = 'Refresh'; if (manual) toast('Dashboard refreshed'); }
+  let loading = false;
+  async function loadAll(manual) { if (loading) return; loading = true; const b = $('#refreshBtn'); b.disabled = true; b.classList.add('spinning'); b.lastElementChild.textContent = 'Refreshing…'; await Promise.all([loadStats(), loadWidget()]); b.disabled = false; b.classList.remove('spinning'); b.lastElementChild.textContent = 'Refresh'; loading = false; if (manual) toast('Dashboard refreshed'); }
   $('#refreshBtn').onclick = () => loadAll(true);
   loadAll(); setInterval(() => document.visibilityState === 'visible' && loadAll(), CFG.REFRESH_INTERVAL_MS || 30000);
 })();
