@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Section -->
+        <div class="profile-card">
+            <div class="profile-avatar">
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <h1 class="profile-name">Your Name</h1>
+            <p class="profile-bio">Developer & Creator</p>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Available</span>
+            </div>
+        </div>
+
+        <!-- Discord Section -->
+        <div class="discord-card">
+            <div class="card-header">
+                <i class="fab fa-discord"></i>
+                <h2>Discord</h2>
+            </div>
+            <div class="discord-profile">
+                <div class="discord-user">
+                    <div class="discord-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="discord-info">
+                        <h3 class="discord-username">Username#0000</h3>
+                        <p class="discord-status">
+                            <span class="status-indicator-small"></span>
+                            Online
+                        </p>
+                    </div>
+                </div>
+                <div class="discord-activity">
+                    <h4>Current Activity</h4>
+                    <div class="activity-content">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Playing something awesome</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spotify Section -->
+        <div class="spotify-card">
+            <div class="card-header">
+                <i class="fab fa-spotify"></i>
+                <h2>Recently Played</h2>
+                <button id="spotify-connect" class="connect-btn" title="Link your Spotify account">
+                    <i class="fas fa-link"></i>
+                    <span>Connect</span>
+                </button>
+            </div>
+            <div class="spotify-tracks">
+                <div class="track-item">
+                    <div class="track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
+                        <h4 class="track-name">Track Name</h4>
+                        <p class="track-artist">Artist Name</p>
+                    </div>
+                    <div class="track-duration">
+                        <span>3:45</span>
+                    </div>
+                </div>
+                <div class="track-item">
+                    <div class="track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
+                        <h4 class="track-name">Track Name</h4>
+                        <p class="track-artist">Artist Name</p>
+                    </div>
+                    <div class="track-duration">
+                        <span>4:12</span>
+                    </div>
+                </div>
+                <div class="track-item">
+                    <div class="track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
+                        <h4 class="track-name">Track Name</h4>
+                        <p class="track-artist">Artist Name</p>
+                    </div>
+                    <div class="track-duration">
+                        <span>2:58</span>
+                    </div>
+                </div>
+                <div class="track-item">
+                    <div class="track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
+                        <h4 class="track-name">Track Name</h4>
+                        <p class="track-artist">Artist Name</p>
+                    </div>
+                    <div class="track-duration">
+                        <span>3:21</span>
+                    </div>
+                </div>
+                <div class="track-item">
+                    <div class="track-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="track-info">
+                        <h4 class="track-name">Track Name</h4>
+                        <p class="track-artist">Artist Name</p>
+                    </div>
+                    <div class="track-duration">
+                        <span>5:03</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="social-card">
+            <div class="card-header">
+                <i class="fas fa-link"></i>
+                <h2>Connect</h2>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link" data-platform="github">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="#" class="social-link" data-platform="twitter">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                <a href="#" class="social-link" data-platform="linkedin">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
+                </a>
+                <a href="#" class="social-link" data-platform="instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
